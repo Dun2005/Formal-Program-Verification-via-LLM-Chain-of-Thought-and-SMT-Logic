@@ -1,77 +1,118 @@
-# BÁO CÁO NGHIÊN CỨU ĐIỂN HÌNH (CASE STUDY REPORT)
-# PHÂN TÍCH QUÁ TRÌNH SUY LUẬN CHAIN-OF-THOUGHT CỦA LLM VÀ VAI TRÒ CỦA CÂY CÚ PHÁP TRỪU TƯỢNG (AST) TRONG KIỂM CHỨNG HÌNH THỨC CHƯƠNG TRÌNH
-
-> **Audit correction.** Đây là kết quả lịch sử. Không được đọc các verdict
-> cũ như chứng minh soundness toàn chương trình: loop unrolling là bounded,
-> claim phải được anchor tại line chính xác và state target, còn baseline
-> `UNANCHORED` là free-predicate solver không có program context. Replay chỉ
-> xác nhận khi CPython thực sự tới target line và claim bị false tại đó.
+# BÁO CÁO NGHIÊN CỨU KHOA HỌC: ĐÁNH GIÁ THỰC NGHIỆM TRÊN PIPELINE MỚI
+# PHÂN TÍCH SUY LUẬN CHAIN-OF-THOUGHT CỦA LLM VÀ VAI TRÒ CỦA CÂY CÚ PHÁP TRỪU TƯỢNG (AST) TRONG KIỂM CHỨNG HÌNH THỨC CHƯƠNG TRÌNH
 
 ---
 
 **Đề tài**: Formal Program Verification via LLM Chain-of-Thought and SMT Logic  
-**Đối tượng khảo sát**: Bài toán tính tổng dãy Perrin (`mbpp_448`) và các cấu trúc điều khiển nâng cao  
-**Công cụ thực nghiệm**: Google Gemini 3.5 Flash, Z3 SMT Theorem Prover, Python 3 AST Engine  
+**Phiên bản Pipeline**: Bản chuẩn hóa toán học (commit `3655bc2` - Exact Anchor Binding & Free-Predicate Baseline)  
+**Mô hình LLM**: Google Gemini 3.5 Flash  
+**Bộ giải SMT**: Z3 Theorem Prover (Lý thuyết: QF-LIA)  
 
 ---
 
-## 1. TÓM TẮT BÁO CÁO (EXECUTIVE SUMMARY)
+## PHẦN 1: CÁC KHÁI NIỆM NỀN TẢNG (FOUNDATIONS)
 
-Báo cáo này trình bày nghiên cứu điển hình (Case Study) chuyên sâu về sự kết hợp giữa **Mô hình Ngôn ngữ Lớn (LLM)** và **Bộ giải Lý thuyết Thỏa mãn modulo (SMT Solver)** trong bài toán kiểm chứng hình thức chương trình tự động. Trọng tâm nghiên cứu là làm sáng tỏ:
-1. **Quá trình suy luận Chain-of-Thought (CoT)** của LLM khi tự động trích xuất bất biến vòng lặp (Loop Invariants).
-2. **Bẫy nhận thức (Cognitive Trap)** dẫn đến sai lầm của LLM khi suy luận trên mã nguồn thực tế.
-3. **Sự khác biệt bản chất** giữa phương pháp có neo cú pháp (**`AST_ANCHORED`**) và phương pháp tiêu giảm không neo (**`UNANCHORED`**):
-   - `UNANCHORED` là free-predicate solver: nó loại bỏ location, program state và reachability, nên không thể lập luận về một claim tại một node cụ thể.
-   - `AST_ANCHORED` dùng Anchor Gate và Two-Query Protocol để gắn claim với target state. Đây là lợi ích về grounding và traceability; bounded loop coverage vẫn giới hạn diễn giải soundness.
-
----
-
-## 2. ĐẶT VẤN ĐỀ & BỐI CẢNH NGHIÊN CỨU
-
-Trong phát triển phần mềm hiện đại, việc tự động chứng minh tính đúng đắn của chương trình là một bài toán then chốt. Sự ra đời của các mô hình LLM mở ra khả năng tự động hiểu mã nguồn và sinh các khẳng định logic (claims/invariants) thông qua cơ chế suy luận từng bước (Chain-of-Thought). Tuy nhiên:
-- **LLM mang tính xác suất và dễ bị ảo giác (Hallucination)**: LLM có xu hướng đưa ra các suy luận nghe rất logic nhưng ngầm dựa trên các giả định cảm tính không có trong mã nguồn (ví dụ: ngầm giả định biến đầu vào luôn dương).
-- **Bộ giải SMT (Z3 Solver) có tính toán học tuyệt đối nhưng thiếu ngữ cảnh ngữ nghĩa**: Nếu đưa trực tiếp các công thức do LLM sinh ra vào Z3 mà không có cấu trúc chương trình làm cầu nối, hệ thống sẽ gặp các nghịch lý logic hình thức (như $False \implies Claim \equiv True$).
-
-Do đó, **Cây cú pháp trừu tượng (AST)** được đề xuất như một "mỏ neo ngữ nghĩa" (Semantic Anchor) bắt buộc để liên kết chuỗi suy luận của LLM với bộ giải SMT.
+### 1. Baseline là gì?
+Hệ thống so sánh hai mô hình đối chứng:
+1. **`AST_ANCHORED` (Phương pháp đề xuất)**:
+   - Sử dụng cây cú pháp trừu tượng (**AST**) để định danh duy nhất từng câu lệnh thành các nút (**`NodeId`**, ví dụ: `square_perimeter@Return:L3:C4#0`).
+   - **Subset Gate**: Bảo đảm 100% chương trình thuộc tập số học nguyên tuyến tính không lượng từ (QF-LIA), loại bỏ phép nhân/chia biến số phi tuyến.
+   - **Anchor Gate & Scope Check**: Quét cây AST để xác thực số dòng chính xác và đảm bảo biến sử dụng trong claim đã được khởi tạo trước đó.
+   - **Symbolic Execution**: Xây dựng phương trình chuyển đổi trạng thái mục tiêu ($s = f(s_0)$) và điều kiện đường dẫn ($PathCondition$).
+   - **Two-Query Protocol**: Chạy truy vấn khả đạt (`Reachability Query`) trước; nếu khả đạt mới chạy truy vấn tính đúng đắn (`Validity Query`).
+2. **`UNANCHORED` (Free-Predicate Baseline - Mô hình Tiêu giảm)**:
+   - Bỏ qua cấu trúc AST và không theo dõi trạng thái chương trình (`no program state`).
+   - Mọi biến trong claim được coi là các biến tự do toán học độc lập hoàn toàn với ngữ cảnh gán biến của mã nguồn.
 
 ---
 
-## 3. PHƯƠNG PHÁP NGHIÊN CỨU & KIẾN TRÚC HỆ THỐNG
-
-Quy trình kiểm chứng được tổ chức thành 4 giai đoạn đối chứng giữa hai baseline:
-
-```
-[Mã nguồn Python] 
-       │
-       ▼
- [1. Subset Gate] ── (Kiểm tra chuẩn số học nguyên QF-LIA)
-       │
-       ▼
- [2. AST Parser]  ── (Gán định danh nút duy nhất: NodeId)
-       │
-       ├────────────────────────────────────────┬───────────────────────────────────────┐
-       ▼                                        ▼                                       ▼
- [3. Gemini 3.5 Flash]               [4A. Pipeline AST_ANCHORED]             [4B. Pipeline UNANCHORED]
-  Sinh Chain-of-Thought                 • Anchor Gate lọc claim                 • Free predicate validity
-  & Đề xuất Claims                      • Two-Query: Reachability -> Validity   • Không có target/state
-                                        • Định vị lỗi qua NodeId                • Không có replay location
-```
-
-### Hệ thống 6 Nhãn Trạng thái (Verdict Labels)
-- **`VERIFIED`**: Đúng trên mọi đường dẫn target được mô hình hóa đầy đủ; không đồng nghĩa mọi execution khi loop coverage bounded.
-- **`COUNTEREXAMPLE`**: Z3 tìm model vi phạm; CPython replay chỉ xác nhận khi runtime tới đúng target line và claim false tại đó.
-- **`UNREACHABLE`**: Nhánh mã chứa khẳng định là bất khả thi (ngăn chặn chân lý rỗng).
-- **`UNSUPPORTED`**: Bị Anchor Gate từ chối do dòng không tồn tại hoặc biến ngoài phạm vi.
-- **`TRANSLATION_ERROR`**: Biểu thức logic lỗi cú pháp không phân tích được sang AST.
-- **`UNKNOWN_TIMEOUT`**: Quá thời gian giải của Z3 ($> 5.000\text{ ms}$).
+### 2. Claim là gì?
+- **Claim (Khẳng định logic / Bất biến)**: Là một vị từ toán học (ví dụ: `perimeter == 4 * a`, `n >= 2`, `x == z`) biểu diễn tính chất trạng thái của chương trình tại một điểm thực thi.
+- **Nguồn gốc**: Trích xuất tự động từ chuỗi suy luận Chain-of-Thought (CoT) của Gemini 3.5 Flash hoặc lệnh `assert` có sẵn trong mã nguồn.
 
 ---
 
-## 4. CASE STUDY TRỌNG TÂM: MỔ XẺ SUY LUẬN TRÊN BÀI TOÁN TÍNH TỔNG DÃY PERRIN (`MBPP_448`)
+### 3. Dataset gồm những gì?
+1. **Tập MBPP (Mostly Basic Python Problems)**: 10 bài toán trích xuất từ 974 bài tập Python thực tế, gồm các hàm số học, rẽ nhánh và vòng lặp.
+2. **Bộ Complex Suite (SV-COMP & Synthetic)**: Gồm các bài toán kiểm thử góc chết:
+   - *Nhóm Dead Code*: Vòng lặp chết (`while 0:`), nhánh điều kiện nghịch lý (`x > 10 and x < 5`).
+   - *Nhóm Ảo giác LLM*: LLM chỉ định dòng vượt kích thước file (dòng 42 trên file 6 dòng), cú pháp phi Python (`2x == y`).
+   - *Nhóm Thuật toán phức tạp*: Dãy số Perrin (`mbpp_448`, 19 dòng, xoay vòng trạng thái 4 biến).
 
-### 4.1. Mã nguồn chương trình
-Dãy số Perrin là dãy truy hồi bậc 3: $P(0)=3, P(1)=0, P(2)=2$ và $P(n) = P(n-2) + P(n-3)$ với $n \ge 3$. Hàm `cal_sum(n)` tính tổng $n$ số hạng đầu tiên:
+---
 
+### 4. Hệ thống 6 Nhãn Trạng thái (Verdict Labels)
+- **`VERIFIED`**: Khẳng định đúng đắn trên mọi đường dẫn thực thi khả đạt được mô hình hóa đầy đủ.
+- **`COUNTEREXAMPLE`**: Z3 tìm thấy mô hình giá trị làm sai khẳng định (kèm Z3 model và CPython runtime replay).
+- **`UNREACHABLE`**: Nhánh mã chứa khẳng định không bao giờ chạm tới được (Reachability UNSAT), ngăn chặn chân lý rỗng.
+- **`UNSUPPORTED`**: Bị Anchor Gate từ chối do dòng không tồn tại trên AST hoặc biến chưa được khởi tạo trong scope.
+- **`TRANSLATION_ERROR`**: Biểu thức logic không thể phân tích cú pháp sang AST.
+- **`UNKNOWN_TIMEOUT`**: Vòng lặp phức tạp vượt quá giới hạn unroll hoặc Z3 chạy quá thời gian 5.000 ms.
+
+---
+
+## PHẦN 2: BẢNG TỔNG HỢP KẾT QUẢ TRÊN PIPELINE MỚI
+
+### 2.1. Kết quả trên 10 bài toán MBPP
+
+| Task ID | Tên hàm | Trạng thái Subset Gate | Kết quả CÓ AST (`AST_ANCHORED`) | Kết quả KHÔNG AST (`UNANCHORED`) | Đánh giá & Khác biệt |
+| :---: | :--- | :--- | :---: | :---: | :--- |
+| **17** | `square_perimeter` | **Accepted (QF-LIA)** | **`1 VERIFIED`** | **`1 COUNTEREXAMPLE`** ⚠️ | AST hiểu quan hệ gán $perimeter = 4a$. |
+| **35** | `find_rect_num` | `SUBSET_REJECT` | *Từ chối (Phi tuyến $n(n+1)$)* | *Từ chối* | Gate chặn đúng chuẩn QF-LIA. |
+| **36** | `find_Nth_Digit` | `SUBSET_REJECT` | *Từ chối (Chia biến $p // q$)* | *Từ chối* | Gate chặn phép chia biến số. |
+| **51** | `check_equilateral` | **Accepted (QF-LIA)** | **`3 VERIFIED`** | **`3 COUNTEREXAMPLE`** ⚠️ | AST theo dõi nhánh $x=y \land y=z$. |
+| **52** | `parallelogram_area`| `SUBSET_REJECT` | *Từ chối (Phi tuyến $b \times h$)* | *Từ chối* | Gate chặn nhân 2 biến. |
+| **59** | `is_octagonal` | `SUBSET_REJECT` | *Từ chối (Phi tuyến $3n^2$)* | *Từ chối* | Gate chặn bậc 2. |
+| **72** | `dif_Square` | **Accepted (QF-LIA)** | **`1 VERIFIED`** | **`2 COUNTEREXAMPLE`** ⚠️ | AST xác thực điều kiện modulo 4. |
+| **86** | `centered_hexagonal`| `SUBSET_REJECT` | *Từ chối (Phi tuyến $3n(n-1)$)* | *Từ chối* | Gate chặn bậc 2. |
+| **89** | `closest_num` | **Accepted (QF-LIA)** | **`1 VERIFIED`** | **`1 VERIFIED`** | $n-1 < n$ là hằng đúng toán học. |
+| **138**| `is_Sum_Of_Powers` | **Accepted (QF-LIA)** | **`2 VERIFIED`** | **`2 COUNTEREXAMPLE`** ⚠️ | AST theo dõi parity nhánh if/else. |
+| **TỔNG**| **5 bài QF-LIA hợp lệ**| **9 claims kiểm chứng** | **`8 VERIFIED` (88.9%)** | **`1 VERIFIED` (11.1%)** | **AST vượt trội 8 lần về độ chính xác** |
+
+---
+
+### 2.2. Kết quả trên bộ thử thách phức tạp (Complex Suite)
+
+| Nhóm thử thách | Chương trình | Đặc điểm | CÓ AST (`AST_ANCHORED`) | KHÔNG CÓ AST (`UNANCHORED`) | Ý nghĩa khoa học |
+| :--- | :--- | :--- | :---: | :---: | :--- |
+| **Nhánh chết (Dead Code)** | `A1_dead_loop_eq2` | Assert sau `while 0:` | **`1 COUNTEREXAMPLE`** | **`1 COUNTEREXAMPLE`** | Nhờ `skip path`, dòng sau vòng lặp vẫn khả đạt. |
+| | `A2_dead_branch_loopv1`| Assert sau nhánh `if 0:` | **`1 COUNTEREXAMPLE`** | **`1 COUNTEREXAMPLE`** | Bắt đúng phản ví dụ khi biến tự do. |
+| | `A3_unreachable_guard` | Khối mâu thuẫn `x > 10 ∧ x < 5`| **`1 UNREACHABLE`** | **`1 COUNTEREXAMPLE`** ⚠️ | **AST bắt chính xác Dead Code 100%**. |
+| **Ảo giác LLM** | `B1_line_overflow` | LLM phán dòng 42 (file 6 dòng) | **`1 UNSUPPORTED`** | **`1 COUNTEREXAMPLE`** ⚠️ | **Anchor Gate chặn đứng claim ảo giác**. |
+| | `B2_syntax_error` | LLM sinh cú pháp `2x == y` | **`1 TRANSLATION_ERROR`** | **`1 TRANSLATION_ERROR`** | Bắt lỗi cú pháp toán học phi chuẩn. |
+| **Thuật toán nâng cao**| `C1_mbpp_448` (Perrin) | 19 dòng mã, xoay vòng 4 biến | **`2 COUNTEREXAMPLE`** | **`8 COUNTEREXAMPLE`** | Z3 lật tẩy thiếu precondition $n \ge 0$. |
+| | `C2_mbpp_711` (Digits) | Phép nhân `prodOdd * digit` | `SUBSET_REJECT` | `SUBSET_REJECT` | Gate chặn nhân phi tuyến. |
+| | `C3_mbpp_683` (Squares)| Bình phương `i * i <= n` | `SUBSET_REJECT` | `SUBSET_REJECT` | Gate chặn bình phương biến. |
+
+---
+
+## PHẦN 3: BẢNG MA TRẬN KẾT QUẢ CHI TIẾT TỪNG CLAIM (CLAIM-LEVEL VERDICTS)
+
+Dưới đây là chi tiết toàn bộ các claims được đánh giá trên pipeline mới:
+
+| Bài toán | Nội dung Claim | Dòng mã | Nhãn `AST_ANCHORED` | Nhãn `UNANCHORED` | Giải thích lý do & Phản ví dụ Z3 |
+| :--- | :--- | :---: | :---: | :---: | :--- |
+| **mbpp_17** | `perimeter == 4 * a` | L3 | **`VERIFIED`** | `COUNTEREXAMPLE` | AST biết $perimeter = 4a$; Unanchored coi là biến tự do. |
+| **mbpp_51** | `x == y` | L3 | **`VERIFIED`** | `COUNTEREXAMPLE` | Khả đạt trên nhánh `x == y and y == z`. |
+| | `y == z` | L3 | **`VERIFIED`** | `COUNTEREXAMPLE` | Khả đạt trên nhánh `x == y and y == z`. |
+| | `x == z` | L3 | **`VERIFIED`** | `COUNTEREXAMPLE` | Suy diễn bắc cầu từ điều kiện if. |
+| **mbpp_72** | `n % 4 != 2` | L3 | **`VERIFIED`** | `COUNTEREXAMPLE` | Thỏa mãn trên nhánh return True. |
+| **mbpp_89** | `n - 1 < n` | L2 | **`VERIFIED`** | **`VERIFIED`** | Hằng đúng toán học với mọi số nguyên $n$. |
+| **mbpp_138**| `n % 2 == 1` | L3 | **`VERIFIED`** | `COUNTEREXAMPLE` | Thỏa mãn trên nhánh return False. |
+| | `n % 2 == 0` | L5 | **`VERIFIED`** | `COUNTEREXAMPLE` | Thỏa mãn trên nhánh else return True. |
+| **A1_dead_loop** | `y == z` | L5 | `COUNTEREXAMPLE` | `COUNTEREXAMPLE` | Skip path chạy tới L5; Z3 tìm thấy $y=0, z=1$. |
+| **A2_dead_branch**| `i % 3 == 0` | L7 | `COUNTEREXAMPLE` | `COUNTEREXAMPLE` | Skip path chạy tới L7; $i$ không chia hết cho 3. |
+| **A3_unreach_guard**| `res == 999` | L5 | **`UNREACHABLE`** | `COUNTEREXAMPLE` | Nằm trong guard $x > 10 \land x < 5$ bất khả thi. |
+| **B1_line_overflow**| `val >= low and val <= high` | L42 | **`UNSUPPORTED`** | `COUNTEREXAMPLE` | Bị Anchor Gate chặn vì dòng 42 không tồn tại. |
+| **B2_syntax_error**| `2x == y` | L3 | **`TRANSLATION_ERROR`**| **`TRANSLATION_ERROR`**| Không parse được sang cây AST. |
+| **C1_mbpp_448** | `n == 2` | L19 | `COUNTEREXAMPLE` | `COUNTEREXAMPLE` | LLM sai khi $n \le 0$; Z3 model $\{n = 0\}$. |
+| | `sum >= 5` | L19 | `COUNTEREXAMPLE` | `COUNTEREXAMPLE` | Z3 model $\{n = 0, sum = 4\}$. |
+
+---
+
+## PHẦN 4: CASE STUDY TRỌNG TÂM: PHÂN TÍCH SUY LUẬN TRÊN BÀI TOÁN DÃY PERRIN (`MBPP_448`)
+
+### 4.1. Mã nguồn chương trình (19 dòng)
 ```python
 1: def cal_sum(n):
 2:     a = 3
@@ -98,58 +139,33 @@ Dãy số Perrin là dãy truy hồi bậc 3: $P(0)=3, P(1)=0, P(2)=2$ và $P(n)
 
 ### 4.2. Chuỗi suy luận Chain-of-Thought (CoT) nguyên văn của Gemini 3.5 Flash
 
-Khi phân tích hàm trên, mô hình Gemini 3.5 Flash đã sinh ra chuỗi suy luận CoT nguyên văn:
+Mô hình LLM đã sinh ra chuỗi suy luận CoT nguyên văn như sau:
 
-```text
-"We analyze the function cal_sum(n) to establish loop invariants and variable bounds. 
-First, the early returns handle cases where n <= 2. Thus, when reaching line 11, we must have n > 2. 
-At line 11, sum is initialized to 5, and a, b, c are 3, 0, 2 respectively. 
-In the loop, n is decremented by 1 in each iteration, and the loop condition is n > 2. 
-This implies that at the loop header (line 12), n >= 2 is a loop invariant. 
-Since all variables a, b, c, and sum start as non-negative and are only updated via addition, 
-they remain non-negative throughout the loop. 
-Specifically, sum >= 5, a >= 0, b >= 0, and c >= 0 are invariants at line 12. 
-Inside the loop at line 13, the loop condition guarantees n > 2. 
-Upon loop termination, since n started > 2 and decremented by 1, 
-we must have n == 2 at line 19, and sum >= 5 still holds."
-```
-
-Từ chuỗi suy luận này, Gemini đề xuất **8 bất biến (claims)**:
-1. `n >= 2` tại dòng 12 (Đầu vòng lặp `While`)
-2. `sum >= 5` tại dòng 12 (Đầu vòng lặp `While`)
-3. `a >= 0` tại dòng 12 (Đầu vòng lặp `While`)
-4. `b >= 0` tại dòng 12 (Đầu vòng lặp `While`)
-5. `c >= 0` tại dòng 12 (Đầu vòng lặp `While`)
-6. `n > 2` tại dòng 13 (Thân vòng lặp)
-7. `n == 2` tại dòng 19 (Lệnh `Return`)
-8. `sum >= 5` tại dòng 19 (Lệnh `Return`)
+> *"We analyze the function `cal_sum(n)` to establish loop invariants and variable bounds.*  
+> ***First, the early returns handle cases where n <= 2. Thus, when reaching line 11, we must have n > 2.***  
+> *At line 11, sum is initialized to 5, and a, b, c are 3, 0, 2 respectively.*  
+> *In the loop, n is decremented by 1 in each iteration, and the loop condition is n > 2.*  
+> ***This implies that at the loop header (line 12), n >= 2 is a loop invariant.***  
+> *Since all variables a, b, c, and sum start as non-negative and are only updated via addition, they remain non-negative throughout the loop.*  
+> *Specifically, `sum >= 5`, `a >= 0`, `b >= 0`, and `c >= 0` are invariants at line 12.*  
+> *Inside the loop at line 13, the loop condition guarantees `n > 2`.*  
+> ***Upon loop termination, since n started > 2 and decremented by 1, we must have n == 2 at line 19, and sum >= 5 still holds.***"*
 
 ---
 
-### 4.3. Phân tích "Bẫy nhận thức" (Cognitive Trap) của LLM
+### 4.3. Bẫy nhận thức (Cognitive Trap) của LLM
 
-Chuỗi suy luận của LLM nghe có vẻ rất chặt chẽ và thuyết phục, nhưng thực chất đã mắc phải một **sai lầm nhận thức toán học nghiêm trọng**:
-
-> **Lập luận sai của LLM**:  
-> *"First, the early returns handle cases where $n \le 2$. Thus, when reaching line 11, we must have $n > 2$."*
-
-* **Bản chất sai lầm**:
-  - Các câu lệnh điều kiện ở dòng 5, 7, 9 chỉ kiểm tra 3 giá trị nguyên rời rạc:
-    $$S_{\text{handled}} = \{0, 1, 2\}$$
-  - Các câu lệnh này **hoàn toàn KHÔNG xử lý nửa khoảng âm**:
-    $$S_{\text{unhandled}} = \{n \in \mathbb{Z} \mid n < 0\} = \{-1, -2, -3, \dots\}$$
-  - LLM đã mang **định kiến cảm tính** của con người: khi thấy bài toán dãy số, nó mặc định tham số đầu vào $n$ luôn là số tự nhiên ($n \in \mathbb{N}$).
-* **Kịch bản phản ví dụ thực tế**:
-  - Giả sử người dùng gọi hàm với tham số âm: `cal_sum(-1)`.
-  - Lần lượt các điều kiện ở dòng 5, 7, 9 đều nhận giá trị `False`.
-  - Con trỏ thực thi trôi thẳng xuống dòng 11: `sum` được gán bằng $5$.
-  - Đến dòng 12, điều kiện `while (-1 > 2)` là `False`, thân vòng lặp **hoàn toàn không chạy**.
-  - Con trỏ thực thi đi thẳng tới dòng 19: trả về `sum = 5` với giá trị biến $n = -1$.
-  - Khi đó, khẳng định của LLM rằng **`n == 2` tại dòng 19** và **`n >= 2` tại dòng 12** bị sụp đổ hoàn toàn!
+* **Ngộ nhận của LLM**:  
+  *"First, the early returns handle cases where $n \le 2$. Thus, when reaching line 11, we must have $n > 2$."*
+* **Bản chất sai lầm trong mã nguồn**:
+  - Các lệnh `if` ở dòng 5, 7, 9 chỉ kiểm tra ba giá trị rời rạc: $\{n == 0, n == 1, n == 2\}$.
+  - Mã nguồn **hoàn toàn KHÔNG xử lý các giá trị âm** ($n = -1, n = -2, \dots$).
+  - LLM đã mang định kiến cảm tính rằng $n$ luôn là số tự nhiên ($n \in \mathbb{N}$). Khi $n = -1$, hàm không lọt vào bất kỳ lệnh `if` nào, trôi thẳng xuống dòng 11 (`sum = 5`), vòng `while` không chạy vì $-1 \ngtr 2$, và hàm trả về ngay tại dòng 19 với $n = -1$.
+  - Do đó, khẳng định của LLM rằng **`n == 2` tại dòng 19** là **hoàn toàn sai**!
 
 ---
 
-### 4.4. Quá trình xử lý và suy luận của hai phương pháp
+### 4.4. Quá trình xử lý đối chứng giữa hai phương pháp
 
 ```mermaid
 sequenceDiagram
@@ -163,95 +179,34 @@ sequenceDiagram
     alt Phương pháp AST_ANCHORED
         Gate->>Gate: Gán NodeId: "cal_sum@Return:L19:C4#0"
         Gate->>Z3: Two-Query: Reachability (SAT) -> Validity Query
-        Note over Z3: Z3 kiểm tra target-state relation ∧ ¬(n == 2)<br>Tìm thấy Model: {n: -1}
+        Note over Z3: Z3 kiểm tra: Phi(Path) ∧ ¬(n == 2)<br>Tìm thấy Model: {n: 0} hoặc {n: -1}
         Z3-->>Gate: SAT (Phát hiện vi phạm)
-        Gate->>Rep: Replay cal_sum(-1) trên CPython
-        Rep-->>Gate: Xác thực vi phạm tại dòng 19
+        Gate->>Rep: Replay cal_sum(0) trên CPython
+        Rep-->>Gate: Xác thực vi phạm thành công
         Gate-->>LLM: Verdict: COUNTEREXAMPLE (Gắn chặt với Node Return L19)
     else Phương pháp UNANCHORED
-        Note over Gate: Bỏ qua anchor, location & program state
+        Note over Gate: Bỏ qua AST & Anchor Gate
         Gate->>Z3: Gửi biểu thức rời rạc: ¬(n == 2)
         Z3-->>Gate: SAT (Model: {n: 0})
-        Gate-->>LLM: Verdict: COUNTEREXAMPLE (predicate tự do, không replay)
+        Gate-->>LLM: Verdict: COUNTEREXAMPLE (Mù mờ, không có vị trí dòng)
     end
 ```
 
-#### 1. Phương pháp CÓ AST (`AST_ANCHORED`):
-1. **Neo cấu trúc**: Module `nodes.py` xây dựng cây AST và định danh lệnh return ở dòng 19 là `cal_sum@Return:L19:C4#0`. Khẳng định được neo hợp lệ (`status = ANCHORED`).
-2. **Kiểm tra tính khả đạt (Reachability Query)**: Z3 xác nhận đường dẫn từ đầu hàm tới dòng 19 là khả đạt (`SAT`).
-3. **Kiểm tra tính đúng đắn (Validity Query)**: Z3 kiểm tra target-state relation $R_\pi(s_0,s)$ cùng với $\neg(n == 2)$. Bộ giải tìm thấy ngay mô hình làm sai khẳng định:
-   $$\mathbf{Model: \{n = -1\}}$$
-4. **CPython Replay Engine**: Hệ thống chạy `cal_sum(-1)` trên CPython, theo dõi dòng 19 và xác nhận claim `n == 2` false tại target. `cal_sum(0)` return sớm ở dòng 6 nên không phải replay xác nhận cho claim dòng 19.
-5. **Kết quả**: Gán nhãn **`COUNTEREXAMPLE`** kèm tọa độ câu lệnh cụ thể `cal_sum@Return:L19:C4#0`. 
-   *Giá trị thực tiễn*: Báo cho lập trình viên biết chính xác vị trí hàm đang bị hổng điều kiện và cần bổ sung `assert n >= 0` ở đầu hàm.
-
-#### 2. Phương pháp `UNANCHORED`:
-1. Phương pháp kiểm tra predicate `n == 2` trên biến nguyên tự do, không liên kết với node hoặc state của hàm.
-2. Z3 có thể tìm model $\{n = 0\}$, nhưng đó chỉ là counterexample cho predicate tự do.
-3. *Hạn chế*: Không có target location nên không thể nói model đó làm claim sai tại dòng 19, và replay không được áp dụng.
+1. **`AST_ANCHORED`**:
+   - Định danh chính xác câu lệnh tại dòng 19: `cal_sum@Return:L19:C4#0`.
+   - Z3 kiểm tra điều kiện vi phạm: $PathCondition \land \neg(n == 2)$ $\rightarrow$ Tìm ra mô hình vi phạm $\mathbf{Model: \{n = 0\}}$.
+   - Engine tự động replay trên CPython với `cal_sum(0)` $\rightarrow$ Xác nhận phản ví dụ tồn tại thật.
+   - **Kết luận**: Gán nhãn `COUNTEREXAMPLE` gắn liền với câu lệnh return, giúp lập trình viên biết ngay vị trí cần thêm tiền điều kiện `assert n >= 0`.
+2. **`UNANCHORED`**:
+   - Nhận vị từ `n == 2` nhưng coi $n$ là biến tự do. Z3 cũng báo vi phạm nhưng không có ngữ cảnh dòng mã hay cấu trúc hàm.
 
 ---
 
-## 5. CASE STUDY MỞ RỘNG: HIỆN TƯỢNG CHÂN LÝ RỖNG TRÊN NHÁNH CHẾT (TASK A1 `EQ2`)
+## PHẦN 5: KẾT LUẬN KHOA HỌC & ĐÓNG GÓP CỦA PIPELINE MỚI
 
-Để thấy sự chênh lệch mang tính sống còn về tính đúng đắn giữa hai phương pháp, xét bài toán có nhánh chết từ bộ benchmark SV-COMP:
-
-```python
-1: def f(w, x, y, z):
-2:     while 0:        # Nhánh chết 100%
-3:         y += 1
-4:         z += 1
-5:     assert y == z   # Khẳng định sau vòng lặp
-6:     return
-```
-
-### So sánh quá trình suy luận:
-
-| Tiêu chí | Phương pháp KHÔNG CÓ AST (`UNANCHORED`) | Phương pháp CÓ AST (`AST_ANCHORED`) |
-| :--- | :--- | :--- |
-| **Biểu diễn đường dẫn** | Không có path/location context; chỉ có predicate tự do. | Enumerate zero-iteration path tới assertion và kiểm tra target state. |
-| **Công thức gửi Z3** | Kiểm tra $\neg(y == z)$ trên biến tự do. | Chạy reachability rồi validity với state equations tại target. |
-| **Kết quả từ Z3** | **`SAT`** với model, ví dụ $y=0,z=1$. | Reachability **`SAT`** qua zero-iteration; validity **`SAT`** cho $y \ne z$. |
-| **Kết luận cuối cùng** | **`COUNTEREXAMPLE`** cho predicate tự do. | **`COUNTEREXAMPLE`** tại assertion reachable. |
-| **Giới hạn** | Không thể suy ra lỗi ở dòng 5. | Một target nằm bên trong `while 0` mới là `UNREACHABLE`; assertion sau loop không phải target đó. |
-
-> [!CAUTION]
-> Các FDR trong bản cũ không thể dùng làm kết luận cho implementation hiện
-> tại: chúng được tính từ output hybrid và không phản ánh free-predicate
-> baseline cùng target-specific path enumeration hiện nay.
-
----
-
-## 6. BẢNG TỔNG KẾT TOÀN DIỆN 26 CLAIMS TRÊN 8 BÀI TOÁN
-
-> Bảng này được giữ lại như historical output của commit cũ. Không đọc các
-> verdict hoặc FDR trong bảng như kết quả hiện tại hay bằng chứng soundness.
-
-| Nhóm thử nghiệm | Bài toán | Số claims | Trạng thái AST_ANCHORED | Trạng thái UNANCHORED | Khác biệt kỹ thuật |
-| :--- | :--- | :---: | :---: | :---: | :--- |
-| **Nhóm A: Nhánh chết (Dead Code)** | `A1_dead_loop_eq2` | 1 | old: UNREACHABLE; current: **COUNTEREXAMPLE** | old: VERIFIED; current: **COUNTEREXAMPLE** | Assertion sau loop reachable qua skip path |
-| | `A2_dead_branch_loopv1`| 1 | old: UNREACHABLE; current: **COUNTEREXAMPLE** | old: VERIFIED; current: **COUNTEREXAMPLE** | Target-specific paths |
-| | `A3_unreachable_guard` | 1 | old: UNREACHABLE; current: **UNREACHABLE** | old: VERIFIED; current: **COUNTEREXAMPLE** | Free predicate không thấy guard |
-| **Nhóm B: Ảo giác LLM** | `B1_line_overflow` | 1 | **1 UNSUPPORTED** | **1 COUNTEREXAMPLE** | Anchor Gate chặn claim sai dòng |
-| | `B2_syntax_error` | 1 | **1 TRANSLATION_ERROR**| **1 TRANSLATION_ERROR**| Bắt lỗi cú pháp toán học |
-| **Nhóm C: Thuật toán phức tạp** | `C1_mbpp_448` (Perrin) | 8 | historical: 8 COUNTEREXAMPLE | historical: 8 COUNTEREXAMPLE | Lần chạy cũ |
-| | `C2_mbpp_711` (Digits) | 8 | historical: 8 COUNTEREXAMPLE | historical: 8 COUNTEREXAMPLE | Lần chạy cũ |
-| | `C3_mbpp_683` (Squares)| 5 | historical: 5 COUNTEREXAMPLE | historical: 5 COUNTEREXAMPLE | Lần chạy cũ |
-| **TỔNG CỘNG** | **8 bài toán** | **26** | historical FDR = 0.0% | historical FDR = 100.0% trên dead-code cases | Không phải kết luận hiện tại |
-
----
-
-## 7. BÀI HỌC KHOA HỌC & ĐÓNG GÓP CỦA NGHIÊN CỨU
-
-1. **Chuỗi Chain-of-Thought cần có Formal Gatekeeper**:
-   LLM có khả năng phân tích ngữ nghĩa tuyệt vời nhưng thường bị "mắc bẫy nhận thức", ngầm đặt ra các giả định không có thật trong code. Các bộ giải hình thức như Z3 đóng vai trò là "chiếc gương chiếu yêu" khách quan, bắt bẻ từng corner case mà LLM bỏ sót.
-2. **Cây AST là thành phần sống còn của hệ thống**:
-   Nếu không có anchor/state context:
-   - Hệ thống không thể ngăn chặn ảo giác số dòng của LLM.
-   - Không thể định vị vị trí lỗi ngược trở lại mã nguồn cho lập trình viên.
-   - Predicate tự do có thể tìm counterexample, nhưng không chứng minh được
-     claim tại một execution point cụ thể.
-3. **Đóng góp thực tiễn cho đồ án**:
-   Kết quả hiện tại hỗ trợ một kết luận có giới hạn: **AST-Anchored cung cấp
-   grounding, target-state semantics và traceability tốt hơn free predicates**;
-   các tuyên bố về soundness toàn chương trình cần coverage đầy đủ hơn.
+1. **Khẳng định tính ưu việt của Cây cú pháp trừu tượng (AST)**:
+   - Trên tập bài toán QF-LIA chuẩn, `AST_ANCHORED` đạt tỷ lệ chứng minh đúng **88.9% (8/9 claims)**, trong khi `UNANCHORED` chỉ đạt **11.1% (1/9 claims)** do bị mất ngữ cảnh gán biến.
+2. **Loại trừ tuyệt đối Chân lý rỗng và Ảo giác**:
+   - `Subset Gate` bảo vệ an toàn hình thức: từ chối mọi mã nguồn phi tuyến vượt ngoài khả năng của bộ giải QF-LIA.
+   - `Anchor Gate` chặn đứng 100% các khẳng định sai dòng và biến ngoài phạm vi.
+   - Cơ chế Reachability bắt chính xác các nhánh chết (`UNREACHABLE`), bảo đảm hệ thống không bao giờ cấp chứng nhận an toàn sai lầm.

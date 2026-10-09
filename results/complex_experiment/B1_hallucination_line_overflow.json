@@ -19,13 +19,13 @@
     "n_unknown_timeout": 0,
     "claim_results": [
       {
-        "claim_id": "llm_claim_1_L0",
+        "claim_id": "llm_claim_1_L42",
         "claim_text": "val >= low and val <= high",
         "status": "UNSUPPORTED",
         "anchor": {
           "node_ids": [],
           "source_lines": [
-            0
+            42
           ],
           "has_grounding": false
         },
@@ -34,7 +34,7 @@
         "reason": "Claim rejected by Anchor Gate (UNSUPPORTED)"
       }
     ],
-    "elapsed_seconds": 0.0005959000000075321,
+    "elapsed_seconds": 0.0006567000000359258,
     "total_tokens_in": 0,
     "total_tokens_out": 0,
     "cot_trace": "",
@@ -55,33 +55,31 @@
     "n_unknown_timeout": 0,
     "claim_results": [
       {
-        "claim_id": "llm_claim_1_L0",
+        "claim_id": "llm_claim_1_L42",
         "claim_text": "val >= low and val <= high",
         "status": "COUNTEREXAMPLE",
         "anchor": {
           "node_ids": [],
-          "source_lines": [
-            0
-          ],
-          "has_grounding": true
+          "source_lines": [],
+          "has_grounding": false
         },
         "counterexample": {
           "z3_model": {
-            "val": -1,
+            "high": -1,
             "low": 0,
-            "high": -1
+            "val": 0
           },
-          "replay_verdict": true,
-          "replay_output": "0",
+          "replay_verdict": null,
+          "replay_output": null,
           "replay_diff": null
         },
         "z3_stats": {
-          "valid_ms": 1.5064999997775885
+          "valid_ms": 0.9853999999904772
         },
-        "reason": "Z3 found a violating model; replay_verdict=True"
+        "reason": "free predicate has an integer counterexample; no program replay is applicable"
       }
     ],
-    "elapsed_seconds": 0.059078600000248116,
+    "elapsed_seconds": 0.0024200999996537575,
     "total_tokens_in": 0,
     "total_tokens_out": 0,
     "cot_trace": "",

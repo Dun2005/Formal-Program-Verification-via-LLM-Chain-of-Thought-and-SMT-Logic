@@ -34,7 +34,7 @@
         "reason": "Claim rejected by Anchor Gate (TRANSLATION_ERROR)"
       }
     ],
-    "elapsed_seconds": 0.000373300000319432,
+    "elapsed_seconds": 0.00072340000042459,
     "total_tokens_in": 0,
     "total_tokens_out": 0,
     "cot_trace": "",
@@ -59,20 +59,16 @@
         "claim_text": "2x == y",
         "status": "TRANSLATION_ERROR",
         "anchor": {
-          "node_ids": [
-            "double_val@Return:L3:C4#0"
-          ],
-          "source_lines": [
-            3
-          ],
-          "has_grounding": true
+          "node_ids": [],
+          "source_lines": [],
+          "has_grounding": false
         },
         "counterexample": null,
         "z3_stats": {},
-        "reason": "Expression could not be parsed to AST"
+        "reason": "free predicate could not be parsed"
       }
     ],
-    "elapsed_seconds": 0.00048999999944499,
+    "elapsed_seconds": 0.00013219999891589396,
     "total_tokens_in": 0,
     "total_tokens_out": 0,
     "cot_trace": "",

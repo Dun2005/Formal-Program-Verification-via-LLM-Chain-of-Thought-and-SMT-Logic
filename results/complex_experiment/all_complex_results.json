@@ -13,16 +13,16 @@
       "source_text": "def f(w, x, y, z):\n    while 0:\n        y += 1\n        z += 1\n    assert y == z\n    return\n",
       "n_claims": 1,
       "n_verified": 0,
-      "n_counterexample": 0,
-      "n_unreachable": 1,
+      "n_counterexample": 1,
+      "n_unreachable": 0,
       "n_unsupported": 0,
       "n_translation_error": 0,
       "n_unknown_timeout": 0,
       "claim_results": [
         {
-          "claim_id": "assert_L5",
+          "claim_id": "assert_L5_#5",
           "claim_text": "y == z",
-          "status": "UNREACHABLE",
+          "status": "COUNTEREXAMPLE",
           "anchor": {
             "node_ids": [
               "f@Assert:L5:C4#0"
@@ -32,14 +32,29 @@
             ],
             "has_grounding": true
           },
-          "counterexample": null,
-          "z3_stats": {
-            "reach_ms": 0.0
+          "counterexample": {
+            "z3_model": {
+              "y": 1,
+              "z": 0,
+              "_state_7656707028657234080_y": 1,
+              "w": 0,
+              "_state_7656707028657234080_w": 0,
+              "x": 0,
+              "_state_7656707028657234080_x": 0,
+              "_state_7656707028657234080_z": 0
+            },
+            "replay_verdict": true,
+            "replay_output": "None",
+            "replay_diff": null
           },
-          "reason": "path is unreachable (reachability UNSAT)"
+          "z3_stats": {
+            "reach_ms": 7.4569000007613795,
+            "valid_ms": 2.8161999998701504
+          },
+          "reason": "Z3 found a violating model at the claim's target path; replay confirmed the target violation"
         }
       ],
-      "elapsed_seconds": 0.00718349999988277,
+      "elapsed_seconds": 0.12201389999972889,
       "total_tokens_in": 0,
       "total_tokens_out": 0,
       "cot_trace": "",
@@ -52,34 +67,38 @@
       "source_path": "<test>",
       "source_text": "def f(w, x, y, z):\n    while 0:\n        y += 1\n        z += 1\n    assert y == z\n    return\n",
       "n_claims": 1,
-      "n_verified": 1,
-      "n_counterexample": 0,
+      "n_verified": 0,
+      "n_counterexample": 1,
       "n_unreachable": 0,
       "n_unsupported": 0,
       "n_translation_error": 0,
       "n_unknown_timeout": 0,
       "claim_results": [
         {
-          "claim_id": "assert_L5",
+          "claim_id": "assert_L5_#1",
           "claim_text": "y == z",
-          "status": "VERIFIED",
+          "status": "COUNTEREXAMPLE",
           "anchor": {
-            "node_ids": [
-              "f@Assert:L5:C4#0"
-            ],
-            "source_lines": [
-              5
-            ],
-            "has_grounding": true
+            "node_ids": [],
+            "source_lines": [],
+            "has_grounding": false
           },
-          "counterexample": null,
+          "counterexample": {
+            "z3_model": {
+              "y": 1,
+              "z": 0
+            },
+            "replay_verdict": null,
+            "replay_output": null,
+            "replay_diff": null
+          },
           "z3_stats": {
-            "valid_ms": 0.0
+            "valid_ms": 1.138199999331846
           },
-          "reason": "claim holds on every reachable execution"
+          "reason": "free predicate has an integer counterexample; no program replay is applicable"
         }
       ],
-      "elapsed_seconds": 0.0014952000001358101,
+      "elapsed_seconds": 0.0027306000010867137,
       "total_tokens_in": 0,
       "total_tokens_out": 0,
       "cot_trace": "",
@@ -102,16 +121,16 @@
       "source_text": "def f(i, j, n):\n    while i < n:\n        if 0:\n            i = i + 6\n        else:\n            i = i + 3\n    assert (i % 3) == 0\n    return\n",
       "n_claims": 1,
       "n_verified": 0,
-      "n_counterexample": 0,
-      "n_unreachable": 1,
+      "n_counterexample": 1,
+      "n_unreachable": 0,
       "n_unsupported": 0,
       "n_translation_error": 0,
       "n_unknown_timeout": 0,
       "claim_results": [
         {
-          "claim_id": "assert_L7",
+          "claim_id": "assert_L7_#5",
           "claim_text": "i % 3 == 0",
-          "status": "UNREACHABLE",
+          "status": "COUNTEREXAMPLE",
           "anchor": {
             "node_ids": [
               "f@Assert:L7:C4#0"
@@ -121,14 +140,27 @@
             ],
             "has_grounding": true
           },
-          "counterexample": null,
-          "z3_stats": {
-            "reach_ms": 0.0
+          "counterexample": {
+            "z3_model": {
+              "n": 1,
+              "i": 1,
+              "_state_6554184467560681890_n": 1,
+              "j": 0,
+              "_state_6554184467560681890_j": 0,
+              "_state_6554184467560681890_i": 1
+            },
+            "replay_verdict": true,
+            "replay_output": "None",
+            "replay_diff": null
           },
-          "reason": "path is unreachable (reachability UNSAT)"
+          "z3_stats": {
+            "reach_ms": 1.0794999998324784,
+            "valid_ms": 8.173899999746936
+          },
+          "reason": "Z3 found a violating model at the claim's target path; replay confirmed the target violation"
         }
       ],
-      "elapsed_seconds": 0.0016046999999161926,
+      "elapsed_seconds": 0.07436469999993278,
       "total_tokens_in": 0,
       "total_tokens_out": 0,
       "cot_trace": "",
@@ -141,34 +173,37 @@
       "source_path": "<test>",
       "source_text": "def f(i, j, n):\n    while i < n:\n        if 0:\n            i = i + 6\n        else:\n            i = i + 3\n    assert (i % 3) == 0\n    return\n",
       "n_claims": 1,
-      "n_verified": 1,
-      "n_counterexample": 0,
+      "n_verified": 0,
+      "n_counterexample": 1,
       "n_unreachable": 0,
       "n_unsupported": 0,
       "n_translation_error": 0,
       "n_unknown_timeout": 0,
       "claim_results": [
         {
-          "claim_id": "assert_L7",
+          "claim_id": "assert_L7_#1",
           "claim_text": "i % 3 == 0",
-          "status": "VERIFIED",
+          "status": "COUNTEREXAMPLE",
           "anchor": {
-            "node_ids": [
-              "f@Assert:L7:C4#0"
-            ],
-            "source_lines": [
-              7
-            ],
-            "has_grounding": true
+            "node_ids": [],
+            "source_lines": [],
+            "has_grounding": false
           },
-          "counterexample": null,
+          "counterexample": {
+            "z3_model": {
+              "i": 1
+            },
+            "replay_verdict": null,
+            "replay_output": null,
+            "replay_diff": null
+          },
           "z3_stats": {
-            "valid_ms": 0.0
+            "valid_ms": 1.2514000009105075
           },
-          "reason": "claim holds on every reachable execution"
+          "reason": "free predicate has an integer counterexample; no program replay is applicable"
         }
       ],
-      "elapsed_seconds": 0.0014363000000230386,
+      "elapsed_seconds": 0.003767999998672167,
       "total_tokens_in": 0,
       "total_tokens_out": 0,
       "cot_trace": "",
@@ -198,7 +233,7 @@
       "n_unknown_timeout": 0,
       "claim_results": [
         {
-          "claim_id": "assert_L5",
+          "claim_id": "assert_L5_#12",
           "claim_text": "res == 999",
           "status": "UNREACHABLE",
           "anchor": {
@@ -214,10 +249,10 @@
           "z3_stats": {
             "reach_ms": 0.0
           },
-          "reason": "path is unreachable (reachability UNSAT)"
+          "reason": "all bounded paths to the exact claim node are unreachable"
         }
       ],
-      "elapsed_seconds": 0.003818400000454858,
+      "elapsed_seconds": 0.008599900000263005,
       "total_tokens_in": 0,
       "total_tokens_out": 0,
       "cot_trace": "",
@@ -230,34 +265,37 @@
       "source_path": "<test>",
       "source_text": "def check_guard(x):\n    res = 0\n    if x > 10 and x < 5:\n        res = 999\n        assert res == 999\n    return res\n",
       "n_claims": 1,
-      "n_verified": 1,
-      "n_counterexample": 0,
+      "n_verified": 0,
+      "n_counterexample": 1,
       "n_unreachable": 0,
       "n_unsupported": 0,
       "n_translation_error": 0,
       "n_unknown_timeout": 0,
       "claim_results": [
         {
-          "claim_id": "assert_L5",
+          "claim_id": "assert_L5_#1",
           "claim_text": "res == 999",
-          "status": "VERIFIED",
+          "status": "COUNTEREXAMPLE",
           "anchor": {
-            "node_ids": [
-              "check_guard@Assert:L5:C8#0"
-            ],
-            "source_lines": [
-              5
-            ],
-            "has_grounding": true
+            "node_ids": [],
+            "source_lines": [],
+            "has_grounding": false
           },
-          "counterexample": null,
+          "counterexample": {
+            "z3_model": {
+              "res": 1000
+            },
+            "replay_verdict": null,
+            "replay_output": null,
+            "replay_diff": null
+          },
           "z3_stats": {
-            "valid_ms": 0.0
+            "valid_ms": 1.0865999993256992
           },
-          "reason": "claim holds on every reachable execution"
+          "reason": "free predicate has an integer counterexample; no program replay is applicable"
         }
       ],
-      "elapsed_seconds": 0.003115599999546248,
+      "elapsed_seconds": 0.002432899998893845,
       "total_tokens_in": 0,
       "total_tokens_out": 0,
       "cot_trace": "",
@@ -287,13 +325,13 @@
       "n_unknown_timeout": 0,
       "claim_results": [
         {
-          "claim_id": "llm_claim_1_L0",
+          "claim_id": "llm_claim_1_L42",
           "claim_text": "val >= low and val <= high",
           "status": "UNSUPPORTED",
           "anchor": {
             "node_ids": [],
             "source_lines": [
-              0
+              42
             ],
             "has_grounding": false
           },
@@ -302,7 +340,7 @@
           "reason": "Claim rejected by Anchor Gate (UNSUPPORTED)"
         }
       ],
-      "elapsed_seconds": 0.0005959000000075321,
+      "elapsed_seconds": 0.0006567000000359258,
       "total_tokens_in": 0,
       "total_tokens_out": 0,
       "cot_trace": "",
@@ -323,33 +361,31 @@
       "n_unknown_timeout": 0,
       "claim_results": [
         {
-          "claim_id": "llm_claim_1_L0",
+          "claim_id": "llm_claim_1_L42",
           "claim_text": "val >= low and val <= high",
           "status": "COUNTEREXAMPLE",
           "anchor": {
             "node_ids": [],
-            "source_lines": [
-              0
-            ],
-            "has_grounding": true
+            "source_lines": [],
+            "has_grounding": false
           },
           "counterexample": {
             "z3_model": {
-              "val": -1,
+              "high": -1,
               "low": 0,
-              "high": -1
+              "val": 0
             },
-            "replay_verdict": true,
-            "replay_output": "0",
+            "replay_verdict": null,
+            "replay_output": null,
             "replay_diff": null
           },
           "z3_stats": {
-            "valid_ms": 1.5064999997775885
+            "valid_ms": 0.9853999999904772
           },
-          "reason": "Z3 found a violating model; replay_verdict=True"
+          "reason": "free predicate has an integer counterexample; no program replay is applicable"
         }
       ],
-      "elapsed_seconds": 0.059078600000248116,
+      "elapsed_seconds": 0.0024200999996537575,
       "total_tokens_in": 0,
       "total_tokens_out": 0,
       "cot_trace": "",
@@ -394,7 +430,7 @@
           "reason": "Claim rejected by Anchor Gate (TRANSLATION_ERROR)"
         }
       ],
-      "elapsed_seconds": 0.000373300000319432,
+      "elapsed_seconds": 0.00072340000042459,
       "total_tokens_in": 0,
       "total_tokens_out": 0,
       "cot_trace": "",
@@ -419,20 +455,16 @@
           "claim_text": "2x == y",
           "status": "TRANSLATION_ERROR",
           "anchor": {
-            "node_ids": [
-              "double_val@Return:L3:C4#0"
-            ],
-            "source_lines": [
-              3
-            ],
-            "has_grounding": true
+            "node_ids": [],
+            "source_lines": [],
+            "has_grounding": false
           },
           "counterexample": null,
           "z3_stats": {},
-          "reason": "Expression could not be parsed to AST"
+          "reason": "free predicate could not be parsed"
         }
       ],
-      "elapsed_seconds": 0.00048999999944499,
+      "elapsed_seconds": 0.00013219999891589396,
       "total_tokens_in": 0,
       "total_tokens_out": 0,
       "cot_trace": "",
@@ -455,11 +487,11 @@
       "source_text": "def cal_sum(n):\n    a = 3\n    b = 0\n    c = 2\n    if (n == 0):\n        return 3\n    if (n == 1):\n        return 3\n    if (n == 2):\n        return 5\n    sum = 5\n    while (n > 2):\n        d = a + b\n        sum = sum + d\n        a = b\n        b = c\n        c = d\n        n = n - 1\n    return sum\n",
       "n_claims": 8,
       "n_verified": 0,
-      "n_counterexample": 8,
+      "n_counterexample": 2,
       "n_unreachable": 0,
       "n_unsupported": 0,
       "n_translation_error": 0,
-      "n_unknown_timeout": 0,
+      "n_unknown_timeout": 6,
       "claim_results": [
         {
           "claim_id": "llm_claim_1_L12",
@@ -476,21 +508,27 @@
           },
           "counterexample": {
             "z3_model": {
-              "n": 0
+              "n": -1,
+              "_state_4053285362314066264_sum": 5,
+              "_state_4053285362314066264_b": 0,
+              "_state_4053285362314066264_n": -1,
+              "_state_4053285362314066264_c": 2,
+              "_state_4053285362314066264_a": 3
             },
             "replay_verdict": true,
-            "replay_output": "3",
+            "replay_output": "5",
             "replay_diff": null
           },
           "z3_stats": {
-            "valid_ms": 1.170000000456639
+            "reach_ms": 3.706100000272272,
+            "valid_ms": 1.5018000012787525
           },
-          "reason": "Z3 found a violating model; replay_verdict=True"
+          "reason": "Z3 found a violating model at the claim's target path; replay confirmed the target violation"
         },
         {
           "claim_id": "llm_claim_2_L12",
           "claim_text": "sum >= 5",
-          "status": "COUNTEREXAMPLE",
+          "status": "UNKNOWN_TIMEOUT",
           "anchor": {
             "node_ids": [
               "cal_sum@While:L12:C4#0"
@@ -500,24 +538,17 @@
             ],
             "has_grounding": true
           },
-          "counterexample": {
-            "z3_model": {
-              "sum": 4,
-              "n": 0
-            },
-            "replay_verdict": false,
-            "replay_output": "",
-            "replay_diff": "REPRO_EXCEPTION: TypeError(\"cal_sum() got an unexpected keyword argument 'sum'\")"
-          },
+          "counterexample": null,
           "z3_stats": {
-            "valid_ms": 1.0984999998981948
+            "reach_ms": 1.549200000226847,
+            "valid_ms": 0.0
           },
-          "reason": "Z3 found a violating model; replay_verdict=False"
+          "reason": "all modeled paths satisfy the claim, but loop/control-flow coverage is incomplete"
         },
         {
           "claim_id": "llm_claim_3_L12",
           "claim_text": "a >= 0",
-          "status": "COUNTEREXAMPLE",
+          "status": "UNKNOWN_TIMEOUT",
           "anchor": {
             "node_ids": [
               "cal_sum@While:L12:C4#0"
@@ -527,24 +558,17 @@
             ],
             "has_grounding": true
           },
-          "counterexample": {
-            "z3_model": {
-              "a": -1,
-              "n": 0
-            },
-            "replay_verdict": false,
-            "replay_output": "",
-            "replay_diff": "REPRO_EXCEPTION: TypeError(\"cal_sum() got an unexpected keyword argument 'a'\")"
-          },
+          "counterexample": null,
           "z3_stats": {
-            "valid_ms": 1.2183999997432693
+            "reach_ms": 1.398299998982111,
+            "valid_ms": 0.0
           },
-          "reason": "Z3 found a violating model; replay_verdict=False"
+          "reason": "all modeled paths satisfy the claim, but loop/control-flow coverage is incomplete"
         },
         {
           "claim_id": "llm_claim_4_L12",
           "claim_text": "b >= 0",
-          "status": "COUNTEREXAMPLE",
+          "status": "UNKNOWN_TIMEOUT",
           "anchor": {
             "node_ids": [
               "cal_sum@While:L12:C4#0"
@@ -554,24 +578,17 @@
             ],
             "has_grounding": true
           },
-          "counterexample": {
-            "z3_model": {
-              "b": -1,
-              "n": 0
-            },
-            "replay_verdict": false,
-            "replay_output": "",
-            "replay_diff": "REPRO_EXCEPTION: TypeError(\"cal_sum() got an unexpected keyword argument 'b'\")"
-          },
+          "counterexample": null,
           "z3_stats": {
-            "valid_ms": 1.0959000001093955
+            "reach_ms": 1.438600000255974,
+            "valid_ms": 0.0
           },
-          "reason": "Z3 found a violating model; replay_verdict=False"
+          "reason": "all modeled paths satisfy the claim, but loop/control-flow coverage is incomplete"
         },
         {
           "claim_id": "llm_claim_5_L12",
           "claim_text": "c >= 0",
-          "status": "COUNTEREXAMPLE",
+          "status": "UNKNOWN_TIMEOUT",
           "anchor": {
             "node_ids": [
               "cal_sum@While:L12:C4#0"
@@ -581,24 +598,17 @@
             ],
             "has_grounding": true
           },
-          "counterexample": {
-            "z3_model": {
-              "c": -1,
-              "n": 0
-            },
-            "replay_verdict": false,
-            "replay_output": "",
-            "replay_diff": "REPRO_EXCEPTION: TypeError(\"cal_sum() got an unexpected keyword argument 'c'\")"
-          },
+          "counterexample": null,
           "z3_stats": {
-            "valid_ms": 1.116800000090734
+            "reach_ms": 1.3989999988552881,
+            "valid_ms": 0.0
           },
-          "reason": "Z3 found a violating model; replay_verdict=False"
+          "reason": "all modeled paths satisfy the claim, but loop/control-flow coverage is incomplete"
         },
         {
           "claim_id": "llm_claim_6_L13",
           "claim_text": "n > 2",
-          "status": "COUNTEREXAMPLE",
+          "status": "UNKNOWN_TIMEOUT",
           "anchor": {
             "node_ids": [
               "cal_sum@Assign:L13:C8#0"
@@ -608,18 +618,12 @@
             ],
             "has_grounding": true
           },
-          "counterexample": {
-            "z3_model": {
-              "n": 0
-            },
-            "replay_verdict": true,
-            "replay_output": "3",
-            "replay_diff": null
-          },
+          "counterexample": null,
           "z3_stats": {
-            "valid_ms": 1.0317000005670707
+            "reach_ms": 1.474999999118154,
+            "valid_ms": 0.0
           },
-          "reason": "Z3 found a violating model; replay_verdict=True"
+          "reason": "all modeled paths satisfy the claim, but loop/control-flow coverage is incomplete"
         },
         {
           "claim_id": "llm_claim_7_L19",
@@ -636,21 +640,28 @@
           },
           "counterexample": {
             "z3_model": {
-              "n": 0
+              "n": -1,
+              "_state_4093869879846058852_d": 3,
+              "_state_4093869879846058852_a": 3,
+              "_state_4093869879846058852_sum": 5,
+              "_state_4093869879846058852_c": 2,
+              "_state_4093869879846058852_n": -1,
+              "_state_4093869879846058852_b": 0
             },
             "replay_verdict": true,
-            "replay_output": "3",
+            "replay_output": "5",
             "replay_diff": null
           },
           "z3_stats": {
-            "valid_ms": 1.0332000001653796
+            "reach_ms": 1.4286999994510552,
+            "valid_ms": 1.4293000003817724
           },
-          "reason": "Z3 found a violating model; replay_verdict=True"
+          "reason": "Z3 found a violating model at the claim's target path; replay confirmed the target violation"
         },
         {
           "claim_id": "llm_claim_8_L19",
           "claim_text": "sum >= 5",
-          "status": "COUNTEREXAMPLE",
+          "status": "UNKNOWN_TIMEOUT",
           "anchor": {
             "node_ids": [
               "cal_sum@Return:L19:C4#0"
@@ -660,24 +671,17 @@
             ],
             "has_grounding": true
           },
-          "counterexample": {
-            "z3_model": {
-              "sum": 4,
-              "n": 0
-            },
-            "replay_verdict": false,
-            "replay_output": "",
-            "replay_diff": "REPRO_EXCEPTION: TypeError(\"cal_sum() got an unexpected keyword argument 'sum'\")"
-          },
+          "counterexample": null,
           "z3_stats": {
-            "valid_ms": 1.169099999970058
+            "reach_ms": 2.8031000001647044,
+            "valid_ms": 0.0
           },
-          "reason": "Z3 found a violating model; replay_verdict=False"
+          "reason": "all modeled paths satisfy the claim, but loop/control-flow coverage is incomplete"
         }
       ],
-      "elapsed_seconds": 0.40397350000057486,
-      "total_tokens_in": 0,
-      "total_tokens_out": 0,
+      "elapsed_seconds": 0.14935379999951692,
+      "total_tokens_in": 416,
+      "total_tokens_out": 471,
       "cot_trace": "We analyze the function cal_sum(n) to establish loop invariants and variable bounds. First, the early returns handle cases where n <= 2. Thus, when reaching line 11, we must have n > 2. At line 11, sum is initialized to 5, and a, b, c are 3, 0, 2 respectively. In the loop, n is decremented by 1 in each iteration, and the loop condition is n > 2. This implies that at the loop header (line 12), n >= 2 is a loop invariant. Since all variables a, b, c, and sum start as non-negative and are only updated via addition, they remain non-negative throughout the loop. Specifically, sum >= 5, a >= 0, b >= 0, and c >= 0 are invariants at line 12. Inside the loop at line 13, the loop condition guarantees n > 2. Upon loop termination, since n started > 2 and decremented by 1, we must have n == 2 at line 19, and sum >= 5 still holds.",
       "baseline": "AST_ANCHORED",
       "rejected_by_subset": false,
@@ -700,218 +704,181 @@
           "claim_text": "n >= 2",
           "status": "COUNTEREXAMPLE",
           "anchor": {
-            "node_ids": [
-              "cal_sum@While:L12:C4#0"
-            ],
-            "source_lines": [
-              12
-            ],
-            "has_grounding": true
+            "node_ids": [],
+            "source_lines": [],
+            "has_grounding": false
           },
           "counterexample": {
             "z3_model": {
-              "n": 0
+              "n": 1
             },
-            "replay_verdict": true,
-            "replay_output": "3",
+            "replay_verdict": null,
+            "replay_output": null,
             "replay_diff": null
           },
           "z3_stats": {
-            "valid_ms": 0.971899999967718
+            "valid_ms": 1.021500000206288
           },
-          "reason": "Z3 found a violating model; replay_verdict=True"
+          "reason": "free predicate has an integer counterexample; no program replay is applicable"
         },
         {
           "claim_id": "llm_claim_2_L12",
           "claim_text": "sum >= 5",
           "status": "COUNTEREXAMPLE",
           "anchor": {
-            "node_ids": [
-              "cal_sum@While:L12:C4#0"
-            ],
-            "source_lines": [
-              12
-            ],
-            "has_grounding": true
+            "node_ids": [],
+            "source_lines": [],
+            "has_grounding": false
           },
           "counterexample": {
             "z3_model": {
-              "sum": 4,
-              "n": 0
+              "sum": 4
             },
-            "replay_verdict": false,
-            "replay_output": "",
-            "replay_diff": "REPRO_EXCEPTION: TypeError(\"cal_sum() got an unexpected keyword argument 'sum'\")"
+            "replay_verdict": null,
+            "replay_output": null,
+            "replay_diff": null
           },
           "z3_stats": {
-            "valid_ms": 1.0172000002057757
+            "valid_ms": 0.9427000004507136
           },
-          "reason": "Z3 found a violating model; replay_verdict=False"
+          "reason": "free predicate has an integer counterexample; no program replay is applicable"
         },
         {
           "claim_id": "llm_claim_3_L12",
           "claim_text": "a >= 0",
           "status": "COUNTEREXAMPLE",
           "anchor": {
-            "node_ids": [
-              "cal_sum@While:L12:C4#0"
-            ],
-            "source_lines": [
-              12
-            ],
-            "has_grounding": true
+            "node_ids": [],
+            "source_lines": [],
+            "has_grounding": false
           },
           "counterexample": {
             "z3_model": {
-              "a": -1,
-              "n": 0
+              "a": -1
             },
-            "replay_verdict": false,
-            "replay_output": "",
-            "replay_diff": "REPRO_EXCEPTION: TypeError(\"cal_sum() got an unexpected keyword argument 'a'\")"
+            "replay_verdict": null,
+            "replay_output": null,
+            "replay_diff": null
           },
           "z3_stats": {
-            "valid_ms": 1.008400000500842
+            "valid_ms": 0.9363999997731298
           },
-          "reason": "Z3 found a violating model; replay_verdict=False"
+          "reason": "free predicate has an integer counterexample; no program replay is applicable"
         },
         {
           "claim_id": "llm_claim_4_L12",
           "claim_text": "b >= 0",
           "status": "COUNTEREXAMPLE",
           "anchor": {
-            "node_ids": [
-              "cal_sum@While:L12:C4#0"
-            ],
-            "source_lines": [
-              12
-            ],
-            "has_grounding": true
+            "node_ids": [],
+            "source_lines": [],
+            "has_grounding": false
           },
           "counterexample": {
             "z3_model": {
-              "b": -1,
-              "n": 0
+              "b": -1
             },
-            "replay_verdict": false,
-            "replay_output": "",
-            "replay_diff": "REPRO_EXCEPTION: TypeError(\"cal_sum() got an unexpected keyword argument 'b'\")"
+            "replay_verdict": null,
+            "replay_output": null,
+            "replay_diff": null
           },
           "z3_stats": {
-            "valid_ms": 1.040600000123959
+            "valid_ms": 0.9226000001945067
           },
-          "reason": "Z3 found a violating model; replay_verdict=False"
+          "reason": "free predicate has an integer counterexample; no program replay is applicable"
         },
         {
           "claim_id": "llm_claim_5_L12",
           "claim_text": "c >= 0",
           "status": "COUNTEREXAMPLE",
           "anchor": {
-            "node_ids": [
-              "cal_sum@While:L12:C4#0"
-            ],
-            "source_lines": [
-              12
-            ],
-            "has_grounding": true
+            "node_ids": [],
+            "source_lines": [],
+            "has_grounding": false
           },
           "counterexample": {
             "z3_model": {
-              "c": -1,
-              "n": 0
+              "c": -1
             },
-            "replay_verdict": false,
-            "replay_output": "",
-            "replay_diff": "REPRO_EXCEPTION: TypeError(\"cal_sum() got an unexpected keyword argument 'c'\")"
+            "replay_verdict": null,
+            "replay_output": null,
+            "replay_diff": null
           },
           "z3_stats": {
-            "valid_ms": 1.0686000005080132
+            "valid_ms": 0.9222999997291481
           },
-          "reason": "Z3 found a violating model; replay_verdict=False"
+          "reason": "free predicate has an integer counterexample; no program replay is applicable"
         },
         {
           "claim_id": "llm_claim_6_L13",
           "claim_text": "n > 2",
           "status": "COUNTEREXAMPLE",
           "anchor": {
-            "node_ids": [
-              "cal_sum@Assign:L13:C8#0"
-            ],
-            "source_lines": [
-              13
-            ],
-            "has_grounding": true
+            "node_ids": [],
+            "source_lines": [],
+            "has_grounding": false
           },
           "counterexample": {
             "z3_model": {
-              "n": 0
+              "n": 2
             },
-            "replay_verdict": true,
-            "replay_output": "3",
+            "replay_verdict": null,
+            "replay_output": null,
             "replay_diff": null
           },
           "z3_stats": {
-            "valid_ms": 0.9118999996644561
+            "valid_ms": 0.8987999990495155
           },
-          "reason": "Z3 found a violating model; replay_verdict=True"
+          "reason": "free predicate has an integer counterexample; no program replay is applicable"
         },
         {
           "claim_id": "llm_claim_7_L19",
           "claim_text": "n == 2",
           "status": "COUNTEREXAMPLE",
           "anchor": {
-            "node_ids": [
-              "cal_sum@Return:L19:C4#0"
-            ],
-            "source_lines": [
-              19
-            ],
-            "has_grounding": true
+            "node_ids": [],
+            "source_lines": [],
+            "has_grounding": false
           },
           "counterexample": {
             "z3_model": {
-              "n": 0
+              "n": 3
             },
-            "replay_verdict": true,
-            "replay_output": "3",
+            "replay_verdict": null,
+            "replay_output": null,
             "replay_diff": null
           },
           "z3_stats": {
-            "valid_ms": 0.8934999996199622
+            "valid_ms": 0.9049999989656499
           },
-          "reason": "Z3 found a violating model; replay_verdict=True"
+          "reason": "free predicate has an integer counterexample; no program replay is applicable"
         },
         {
           "claim_id": "llm_claim_8_L19",
           "claim_text": "sum >= 5",
           "status": "COUNTEREXAMPLE",
           "anchor": {
-            "node_ids": [
-              "cal_sum@Return:L19:C4#0"
-            ],
-            "source_lines": [
-              19
-            ],
-            "has_grounding": true
+            "node_ids": [],
+            "source_lines": [],
+            "has_grounding": false
           },
           "counterexample": {
             "z3_model": {
-              "sum": 4,
-              "n": 0
+              "sum": 4
             },
-            "replay_verdict": false,
-            "replay_output": "",
-            "replay_diff": "REPRO_EXCEPTION: TypeError(\"cal_sum() got an unexpected keyword argument 'sum'\")"
+            "replay_verdict": null,
+            "replay_output": null,
+            "replay_diff": null
           },
           "z3_stats": {
-            "valid_ms": 1.0071999995489023
+            "valid_ms": 0.8949999992182711
           },
-          "reason": "Z3 found a violating model; replay_verdict=False"
+          "reason": "free predicate has an integer counterexample; no program replay is applicable"
         }
       ],
-      "elapsed_seconds": 0.34906669999963924,
-      "total_tokens_in": 0,
-      "total_tokens_out": 0,
+      "elapsed_seconds": 0.015108000001418986,
+      "total_tokens_in": 416,
+      "total_tokens_out": 471,
       "cot_trace": "We analyze the function cal_sum(n) to establish loop invariants and variable bounds. First, the early returns handle cases where n <= 2. Thus, when reaching line 11, we must have n > 2. At line 11, sum is initialized to 5, and a, b, c are 3, 0, 2 respectively. In the loop, n is decremented by 1 in each iteration, and the loop condition is n > 2. This implies that at the loop header (line 12), n >= 2 is a loop invariant. Since all variables a, b, c, and sum start as non-negative and are only updated via addition, they remain non-negative throughout the loop. Specifically, sum >= 5, a >= 0, b >= 0, and c >= 0 are invariants at line 12. Inside the loop at line 13, the loop condition guarantees n > 2. Upon loop termination, since n started > 2 and decremented by 1, we must have n == 2 at line 19, and sum >= 5 still holds.",
       "baseline": "UNANCHORED",
       "rejected_by_subset": false,
@@ -930,469 +897,41 @@
       "program_id": "<test>",
       "source_path": "<test>",
       "source_text": "def product_Equal(n):\n    if n < 10:\n        return False\n    prodOdd = 1\n    prodEven = 1\n    while n > 0:\n        digit = n % 10\n        prodOdd = prodOdd * digit\n        n = n // 10\n        if n == 0:\n            break\n        digit = n % 10\n        prodEven = prodEven * digit\n        n = n // 10\n    if prodOdd == prodEven:\n        return True\n    return False\n",
-      "n_claims": 8,
+      "n_claims": 0,
       "n_verified": 0,
-      "n_counterexample": 8,
+      "n_counterexample": 0,
       "n_unreachable": 0,
       "n_unsupported": 0,
       "n_translation_error": 0,
       "n_unknown_timeout": 0,
-      "claim_results": [
-        {
-          "claim_id": "llm_claim_1_L6",
-          "claim_text": "n >= 0",
-          "status": "COUNTEREXAMPLE",
-          "anchor": {
-            "node_ids": [
-              "product_Equal@While:L6:C4#0"
-            ],
-            "source_lines": [
-              6
-            ],
-            "has_grounding": true
-          },
-          "counterexample": {
-            "z3_model": {
-              "n": -1
-            },
-            "replay_verdict": true,
-            "replay_output": "False",
-            "replay_diff": null
-          },
-          "z3_stats": {
-            "valid_ms": 2.7958000000580796
-          },
-          "reason": "Z3 found a violating model; replay_verdict=True"
-        },
-        {
-          "claim_id": "llm_claim_2_L6",
-          "claim_text": "prodOdd >= 0",
-          "status": "COUNTEREXAMPLE",
-          "anchor": {
-            "node_ids": [
-              "product_Equal@While:L6:C4#0"
-            ],
-            "source_lines": [
-              6
-            ],
-            "has_grounding": true
-          },
-          "counterexample": {
-            "z3_model": {
-              "prodOdd": -1,
-              "n": 9
-            },
-            "replay_verdict": false,
-            "replay_output": "",
-            "replay_diff": "REPRO_EXCEPTION: TypeError(\"product_Equal() got an unexpected keyword argument 'prodOdd'\")"
-          },
-          "z3_stats": {
-            "valid_ms": 1.1266999999861582
-          },
-          "reason": "Z3 found a violating model; replay_verdict=False"
-        },
-        {
-          "claim_id": "llm_claim_3_L6",
-          "claim_text": "prodEven >= 0",
-          "status": "COUNTEREXAMPLE",
-          "anchor": {
-            "node_ids": [
-              "product_Equal@While:L6:C4#0"
-            ],
-            "source_lines": [
-              6
-            ],
-            "has_grounding": true
-          },
-          "counterexample": {
-            "z3_model": {
-              "n": 9,
-              "prodEven": -1
-            },
-            "replay_verdict": false,
-            "replay_output": "",
-            "replay_diff": "REPRO_EXCEPTION: TypeError(\"product_Equal() got an unexpected keyword argument 'prodEven'\")"
-          },
-          "z3_stats": {
-            "valid_ms": 3.8352000001395936
-          },
-          "reason": "Z3 found a violating model; replay_verdict=False"
-        },
-        {
-          "claim_id": "llm_claim_4_L10",
-          "claim_text": "n >= 0",
-          "status": "COUNTEREXAMPLE",
-          "anchor": {
-            "node_ids": [
-              "product_Equal@If:L10:C8#0"
-            ],
-            "source_lines": [
-              10
-            ],
-            "has_grounding": true
-          },
-          "counterexample": {
-            "z3_model": {
-              "n": -1
-            },
-            "replay_verdict": true,
-            "replay_output": "False",
-            "replay_diff": null
-          },
-          "z3_stats": {
-            "valid_ms": 2.257199999803561
-          },
-          "reason": "Z3 found a violating model; replay_verdict=True"
-        },
-        {
-          "claim_id": "llm_claim_5_L10",
-          "claim_text": "prodOdd >= 0",
-          "status": "COUNTEREXAMPLE",
-          "anchor": {
-            "node_ids": [
-              "product_Equal@If:L10:C8#0"
-            ],
-            "source_lines": [
-              10
-            ],
-            "has_grounding": true
-          },
-          "counterexample": {
-            "z3_model": {
-              "n": 9,
-              "prodOdd": -1
-            },
-            "replay_verdict": false,
-            "replay_output": "",
-            "replay_diff": "REPRO_EXCEPTION: TypeError(\"product_Equal() got an unexpected keyword argument 'prodOdd'\")"
-          },
-          "z3_stats": {
-            "valid_ms": 1.3626999998450628
-          },
-          "reason": "Z3 found a violating model; replay_verdict=False"
-        },
-        {
-          "claim_id": "llm_claim_6_L15",
-          "claim_text": "n == 0",
-          "status": "COUNTEREXAMPLE",
-          "anchor": {
-            "node_ids": [
-              "product_Equal@If:L15:C4#0"
-            ],
-            "source_lines": [
-              15
-            ],
-            "has_grounding": true
-          },
-          "counterexample": {
-            "z3_model": {
-              "n": -1
-            },
-            "replay_verdict": true,
-            "replay_output": "False",
-            "replay_diff": null
-          },
-          "z3_stats": {
-            "valid_ms": 2.0143000001553446
-          },
-          "reason": "Z3 found a violating model; replay_verdict=True"
-        },
-        {
-          "claim_id": "llm_claim_7_L15",
-          "claim_text": "prodOdd >= 0",
-          "status": "COUNTEREXAMPLE",
-          "anchor": {
-            "node_ids": [
-              "product_Equal@If:L15:C4#0"
-            ],
-            "source_lines": [
-              15
-            ],
-            "has_grounding": true
-          },
-          "counterexample": {
-            "z3_model": {
-              "n": 9,
-              "prodOdd": -1
-            },
-            "replay_verdict": false,
-            "replay_output": "",
-            "replay_diff": "REPRO_EXCEPTION: TypeError(\"product_Equal() got an unexpected keyword argument 'prodOdd'\")"
-          },
-          "z3_stats": {
-            "valid_ms": 1.1199000000488013
-          },
-          "reason": "Z3 found a violating model; replay_verdict=False"
-        },
-        {
-          "claim_id": "llm_claim_8_L15",
-          "claim_text": "prodEven >= 0",
-          "status": "COUNTEREXAMPLE",
-          "anchor": {
-            "node_ids": [
-              "product_Equal@If:L15:C4#0"
-            ],
-            "source_lines": [
-              15
-            ],
-            "has_grounding": true
-          },
-          "counterexample": {
-            "z3_model": {
-              "prodEven": -1,
-              "n": 9
-            },
-            "replay_verdict": false,
-            "replay_output": "",
-            "replay_diff": "REPRO_EXCEPTION: TypeError(\"product_Equal() got an unexpected keyword argument 'prodEven'\")"
-          },
-          "z3_stats": {
-            "valid_ms": 4.6687999993082485
-          },
-          "reason": "Z3 found a violating model; replay_verdict=False"
-        }
-      ],
-      "elapsed_seconds": 0.4221840999998676,
+      "claim_results": [],
+      "elapsed_seconds": 0.00019330000031914096,
       "total_tokens_in": 0,
       "total_tokens_out": 0,
-      "cot_trace": "The program calculates the product of odd-positioned and even-positioned digits of a number `n` (where `n >= 10`). We can establish several invariants regarding the non-negativity of the variables. Since `n` starts as a positive integer and is only divided by 10, `n` remains non-negative throughout the loop. The digits extracted via `n % 10` are always non-negative (between 0 and 9), meaning `prodOdd` and `prodEven` (which start at 1) will always remain non-negative. Upon loop termination, `n` must be equal to 0.",
+      "cot_trace": "",
       "baseline": "AST_ANCHORED",
-      "rejected_by_subset": false,
-      "subset_rejection_reason": null
+      "rejected_by_subset": true,
+      "subset_rejection_reason": "nonlinear multiplication is not part of the QF-LIA subset"
     },
     "unanchored": {
       "program_id": "<test>",
       "source_path": "<test>",
       "source_text": "def product_Equal(n):\n    if n < 10:\n        return False\n    prodOdd = 1\n    prodEven = 1\n    while n > 0:\n        digit = n % 10\n        prodOdd = prodOdd * digit\n        n = n // 10\n        if n == 0:\n            break\n        digit = n % 10\n        prodEven = prodEven * digit\n        n = n // 10\n    if prodOdd == prodEven:\n        return True\n    return False\n",
-      "n_claims": 8,
+      "n_claims": 0,
       "n_verified": 0,
-      "n_counterexample": 8,
+      "n_counterexample": 0,
       "n_unreachable": 0,
       "n_unsupported": 0,
       "n_translation_error": 0,
       "n_unknown_timeout": 0,
-      "claim_results": [
-        {
-          "claim_id": "llm_claim_1_L6",
-          "claim_text": "n >= 0",
-          "status": "COUNTEREXAMPLE",
-          "anchor": {
-            "node_ids": [
-              "product_Equal@While:L6:C4#0"
-            ],
-            "source_lines": [
-              6
-            ],
-            "has_grounding": true
-          },
-          "counterexample": {
-            "z3_model": {
-              "n": -1
-            },
-            "replay_verdict": true,
-            "replay_output": "False",
-            "replay_diff": null
-          },
-          "z3_stats": {
-            "valid_ms": 2.3037000000840635
-          },
-          "reason": "Z3 found a violating model; replay_verdict=True"
-        },
-        {
-          "claim_id": "llm_claim_2_L6",
-          "claim_text": "prodOdd >= 0",
-          "status": "COUNTEREXAMPLE",
-          "anchor": {
-            "node_ids": [
-              "product_Equal@While:L6:C4#0"
-            ],
-            "source_lines": [
-              6
-            ],
-            "has_grounding": true
-          },
-          "counterexample": {
-            "z3_model": {
-              "n": 9,
-              "prodOdd": -1
-            },
-            "replay_verdict": false,
-            "replay_output": "",
-            "replay_diff": "REPRO_EXCEPTION: TypeError(\"product_Equal() got an unexpected keyword argument 'prodOdd'\")"
-          },
-          "z3_stats": {
-            "valid_ms": 2.107100000102946
-          },
-          "reason": "Z3 found a violating model; replay_verdict=False"
-        },
-        {
-          "claim_id": "llm_claim_3_L6",
-          "claim_text": "prodEven >= 0",
-          "status": "COUNTEREXAMPLE",
-          "anchor": {
-            "node_ids": [
-              "product_Equal@While:L6:C4#0"
-            ],
-            "source_lines": [
-              6
-            ],
-            "has_grounding": true
-          },
-          "counterexample": {
-            "z3_model": {
-              "n": 9,
-              "prodEven": -1
-            },
-            "replay_verdict": false,
-            "replay_output": "",
-            "replay_diff": "REPRO_EXCEPTION: TypeError(\"product_Equal() got an unexpected keyword argument 'prodEven'\")"
-          },
-          "z3_stats": {
-            "valid_ms": 18.801799999891955
-          },
-          "reason": "Z3 found a violating model; replay_verdict=False"
-        },
-        {
-          "claim_id": "llm_claim_4_L10",
-          "claim_text": "n >= 0",
-          "status": "COUNTEREXAMPLE",
-          "anchor": {
-            "node_ids": [
-              "product_Equal@If:L10:C8#0"
-            ],
-            "source_lines": [
-              10
-            ],
-            "has_grounding": true
-          },
-          "counterexample": {
-            "z3_model": {
-              "n": -1
-            },
-            "replay_verdict": true,
-            "replay_output": "False",
-            "replay_diff": null
-          },
-          "z3_stats": {
-            "valid_ms": 1.6893000001800829
-          },
-          "reason": "Z3 found a violating model; replay_verdict=True"
-        },
-        {
-          "claim_id": "llm_claim_5_L10",
-          "claim_text": "prodOdd >= 0",
-          "status": "COUNTEREXAMPLE",
-          "anchor": {
-            "node_ids": [
-              "product_Equal@If:L10:C8#0"
-            ],
-            "source_lines": [
-              10
-            ],
-            "has_grounding": true
-          },
-          "counterexample": {
-            "z3_model": {
-              "prodOdd": -1,
-              "n": 9
-            },
-            "replay_verdict": false,
-            "replay_output": "",
-            "replay_diff": "REPRO_EXCEPTION: TypeError(\"product_Equal() got an unexpected keyword argument 'prodOdd'\")"
-          },
-          "z3_stats": {
-            "valid_ms": 2.602399999886984
-          },
-          "reason": "Z3 found a violating model; replay_verdict=False"
-        },
-        {
-          "claim_id": "llm_claim_6_L15",
-          "claim_text": "n == 0",
-          "status": "COUNTEREXAMPLE",
-          "anchor": {
-            "node_ids": [
-              "product_Equal@If:L15:C4#0"
-            ],
-            "source_lines": [
-              15
-            ],
-            "has_grounding": true
-          },
-          "counterexample": {
-            "z3_model": {
-              "n": -1
-            },
-            "replay_verdict": true,
-            "replay_output": "False",
-            "replay_diff": null
-          },
-          "z3_stats": {
-            "valid_ms": 1.6993999997794162
-          },
-          "reason": "Z3 found a violating model; replay_verdict=True"
-        },
-        {
-          "claim_id": "llm_claim_7_L15",
-          "claim_text": "prodOdd >= 0",
-          "status": "COUNTEREXAMPLE",
-          "anchor": {
-            "node_ids": [
-              "product_Equal@If:L15:C4#0"
-            ],
-            "source_lines": [
-              15
-            ],
-            "has_grounding": true
-          },
-          "counterexample": {
-            "z3_model": {
-              "prodOdd": -1,
-              "n": 9
-            },
-            "replay_verdict": false,
-            "replay_output": "",
-            "replay_diff": "REPRO_EXCEPTION: TypeError(\"product_Equal() got an unexpected keyword argument 'prodOdd'\")"
-          },
-          "z3_stats": {
-            "valid_ms": 3.456700000242563
-          },
-          "reason": "Z3 found a violating model; replay_verdict=False"
-        },
-        {
-          "claim_id": "llm_claim_8_L15",
-          "claim_text": "prodEven >= 0",
-          "status": "COUNTEREXAMPLE",
-          "anchor": {
-            "node_ids": [
-              "product_Equal@If:L15:C4#0"
-            ],
-            "source_lines": [
-              15
-            ],
-            "has_grounding": true
-          },
-          "counterexample": {
-            "z3_model": {
-              "n": 9,
-              "prodEven": -1
-            },
-            "replay_verdict": false,
-            "replay_output": "",
-            "replay_diff": "REPRO_EXCEPTION: TypeError(\"product_Equal() got an unexpected keyword argument 'prodEven'\")"
-          },
-          "z3_stats": {
-            "valid_ms": 1.2667999999393942
-          },
-          "reason": "Z3 found a violating model; replay_verdict=False"
-        }
-      ],
-      "elapsed_seconds": 0.3807007999994312,
+      "claim_results": [],
+      "elapsed_seconds": 0.00010779999865917489,
       "total_tokens_in": 0,
       "total_tokens_out": 0,
-      "cot_trace": "The program calculates the product of odd-positioned and even-positioned digits of a number `n` (where `n >= 10`). We can establish several invariants regarding the non-negativity of the variables. Since `n` starts as a positive integer and is only divided by 10, `n` remains non-negative throughout the loop. The digits extracted via `n % 10` are always non-negative (between 0 and 9), meaning `prodOdd` and `prodEven` (which start at 1) will always remain non-negative. Upon loop termination, `n` must be equal to 0.",
+      "cot_trace": "",
       "baseline": "UNANCHORED",
-      "rejected_by_subset": false,
-      "subset_rejection_reason": null
+      "rejected_by_subset": true,
+      "subset_rejection_reason": "nonlinear multiplication is not part of the QF-LIA subset"
     }
   },
   {
@@ -1407,313 +946,41 @@
       "program_id": "<test>",
       "source_path": "<test>",
       "source_text": "def sum_Square(n):\n    i = 1\n    while i * i <= n:\n        j = 1\n        while (j * j <= n):\n            if (i * i + j * j == n):\n                return True\n            j = j + 1\n        i = i + 1\n    return False\n",
-      "n_claims": 5,
+      "n_claims": 0,
       "n_verified": 0,
-      "n_counterexample": 5,
+      "n_counterexample": 0,
       "n_unreachable": 0,
       "n_unsupported": 0,
       "n_translation_error": 0,
       "n_unknown_timeout": 0,
-      "claim_results": [
-        {
-          "claim_id": "llm_claim_1_L3",
-          "claim_text": "i >= 1",
-          "status": "COUNTEREXAMPLE",
-          "anchor": {
-            "node_ids": [
-              "sum_Square@While:L3:C4#0"
-            ],
-            "source_lines": [
-              3
-            ],
-            "has_grounding": true
-          },
-          "counterexample": {
-            "z3_model": {
-              "i": 0,
-              "n": 2
-            },
-            "replay_verdict": false,
-            "replay_output": "",
-            "replay_diff": "REPRO_EXCEPTION: TypeError(\"sum_Square() got an unexpected keyword argument 'i'\")"
-          },
-          "z3_stats": {
-            "valid_ms": 1.4869999995426042
-          },
-          "reason": "Z3 found a violating model; replay_verdict=False"
-        },
-        {
-          "claim_id": "llm_claim_2_L5",
-          "claim_text": "j >= 1",
-          "status": "COUNTEREXAMPLE",
-          "anchor": {
-            "node_ids": [
-              "sum_Square@While:L5:C8#0"
-            ],
-            "source_lines": [
-              5
-            ],
-            "has_grounding": true
-          },
-          "counterexample": {
-            "z3_model": {
-              "j": 0,
-              "n": 2
-            },
-            "replay_verdict": false,
-            "replay_output": "",
-            "replay_diff": "REPRO_EXCEPTION: TypeError(\"sum_Square() got an unexpected keyword argument 'j'\")"
-          },
-          "z3_stats": {
-            "valid_ms": 1.2956000000485801
-          },
-          "reason": "Z3 found a violating model; replay_verdict=False"
-        },
-        {
-          "claim_id": "llm_claim_3_L5",
-          "claim_text": "i * i <= n",
-          "status": "COUNTEREXAMPLE",
-          "anchor": {
-            "node_ids": [
-              "sum_Square@While:L5:C8#0"
-            ],
-            "source_lines": [
-              5
-            ],
-            "has_grounding": true
-          },
-          "counterexample": {
-            "z3_model": {
-              "i": -5,
-              "n": 2
-            },
-            "replay_verdict": false,
-            "replay_output": "",
-            "replay_diff": "REPRO_EXCEPTION: TypeError(\"sum_Square() got an unexpected keyword argument 'i'\")"
-          },
-          "z3_stats": {
-            "valid_ms": 3.276400000686408
-          },
-          "reason": "Z3 found a violating model; replay_verdict=False"
-        },
-        {
-          "claim_id": "llm_claim_4_L6",
-          "claim_text": "j * j <= n",
-          "status": "COUNTEREXAMPLE",
-          "anchor": {
-            "node_ids": [
-              "sum_Square@If:L6:C12#0"
-            ],
-            "source_lines": [
-              6
-            ],
-            "has_grounding": true
-          },
-          "counterexample": {
-            "z3_model": {
-              "j": -6,
-              "n": 2
-            },
-            "replay_verdict": false,
-            "replay_output": "",
-            "replay_diff": "REPRO_EXCEPTION: TypeError(\"sum_Square() got an unexpected keyword argument 'j'\")"
-          },
-          "z3_stats": {
-            "valid_ms": 12.233800000103656
-          },
-          "reason": "Z3 found a violating model; replay_verdict=False"
-        },
-        {
-          "claim_id": "llm_claim_5_L6",
-          "claim_text": "i * i <= n",
-          "status": "COUNTEREXAMPLE",
-          "anchor": {
-            "node_ids": [
-              "sum_Square@If:L6:C12#0"
-            ],
-            "source_lines": [
-              6
-            ],
-            "has_grounding": true
-          },
-          "counterexample": {
-            "z3_model": {
-              "i": -7,
-              "n": 2
-            },
-            "replay_verdict": false,
-            "replay_output": "",
-            "replay_diff": "REPRO_EXCEPTION: TypeError(\"sum_Square() got an unexpected keyword argument 'i'\")"
-          },
-          "z3_stats": {
-            "valid_ms": 3.2596999999441323
-          },
-          "reason": "Z3 found a violating model; replay_verdict=False"
-        }
-      ],
-      "elapsed_seconds": 0.3438416999997571,
+      "claim_results": [],
+      "elapsed_seconds": 0.00019530000099621248,
       "total_tokens_in": 0,
       "total_tokens_out": 0,
-      "cot_trace": "The program checks if a given integer `n` can be expressed as the sum of two squares, `i*i + j*j == n`. We analyze the loop invariants and variable bounds:\n1. The outer loop variable `i` starts at 1 and increases by 1 in each iteration. Thus, at the outer loop header (line 3), `i >= 1` is always true.\n2. Upon entering the outer loop, the condition `i * i <= n` is guaranteed to hold. This remains true throughout the outer loop body, including at the inner loop header (line 5).\n3. The inner loop variable `j` starts at 1 and increases by 1. Thus, at the inner loop header (line 5), `j >= 1` holds.\n4. Inside the inner loop (line 6), both loop conditions must hold, meaning `i * i <= n` and `j * j <= n` are both true.",
+      "cot_trace": "",
       "baseline": "AST_ANCHORED",
-      "rejected_by_subset": false,
-      "subset_rejection_reason": null
+      "rejected_by_subset": true,
+      "subset_rejection_reason": "nonlinear multiplication is not part of the QF-LIA subset"
     },
     "unanchored": {
       "program_id": "<test>",
       "source_path": "<test>",
       "source_text": "def sum_Square(n):\n    i = 1\n    while i * i <= n:\n        j = 1\n        while (j * j <= n):\n            if (i * i + j * j == n):\n                return True\n            j = j + 1\n        i = i + 1\n    return False\n",
-      "n_claims": 5,
+      "n_claims": 0,
       "n_verified": 0,
-      "n_counterexample": 5,
+      "n_counterexample": 0,
       "n_unreachable": 0,
       "n_unsupported": 0,
       "n_translation_error": 0,
       "n_unknown_timeout": 0,
-      "claim_results": [
-        {
-          "claim_id": "llm_claim_1_L3",
-          "claim_text": "i >= 1",
-          "status": "COUNTEREXAMPLE",
-          "anchor": {
-            "node_ids": [
-              "sum_Square@While:L3:C4#0"
-            ],
-            "source_lines": [
-              3
-            ],
-            "has_grounding": true
-          },
-          "counterexample": {
-            "z3_model": {
-              "i": 0,
-              "n": 2
-            },
-            "replay_verdict": false,
-            "replay_output": "",
-            "replay_diff": "REPRO_EXCEPTION: TypeError(\"sum_Square() got an unexpected keyword argument 'i'\")"
-          },
-          "z3_stats": {
-            "valid_ms": 2.2521999999298714
-          },
-          "reason": "Z3 found a violating model; replay_verdict=False"
-        },
-        {
-          "claim_id": "llm_claim_2_L5",
-          "claim_text": "j >= 1",
-          "status": "COUNTEREXAMPLE",
-          "anchor": {
-            "node_ids": [
-              "sum_Square@While:L5:C8#0"
-            ],
-            "source_lines": [
-              5
-            ],
-            "has_grounding": true
-          },
-          "counterexample": {
-            "z3_model": {
-              "j": 0,
-              "n": 2
-            },
-            "replay_verdict": false,
-            "replay_output": "",
-            "replay_diff": "REPRO_EXCEPTION: TypeError(\"sum_Square() got an unexpected keyword argument 'j'\")"
-          },
-          "z3_stats": {
-            "valid_ms": 1.1264000004302943
-          },
-          "reason": "Z3 found a violating model; replay_verdict=False"
-        },
-        {
-          "claim_id": "llm_claim_3_L5",
-          "claim_text": "i * i <= n",
-          "status": "COUNTEREXAMPLE",
-          "anchor": {
-            "node_ids": [
-              "sum_Square@While:L5:C8#0"
-            ],
-            "source_lines": [
-              5
-            ],
-            "has_grounding": true
-          },
-          "counterexample": {
-            "z3_model": {
-              "i": 7,
-              "n": 2
-            },
-            "replay_verdict": false,
-            "replay_output": "",
-            "replay_diff": "REPRO_EXCEPTION: TypeError(\"sum_Square() got an unexpected keyword argument 'i'\")"
-          },
-          "z3_stats": {
-            "valid_ms": 7.414699999571894
-          },
-          "reason": "Z3 found a violating model; replay_verdict=False"
-        },
-        {
-          "claim_id": "llm_claim_4_L6",
-          "claim_text": "j * j <= n",
-          "status": "COUNTEREXAMPLE",
-          "anchor": {
-            "node_ids": [
-              "sum_Square@If:L6:C12#0"
-            ],
-            "source_lines": [
-              6
-            ],
-            "has_grounding": true
-          },
-          "counterexample": {
-            "z3_model": {
-              "j": -8,
-              "n": 2
-            },
-            "replay_verdict": false,
-            "replay_output": "",
-            "replay_diff": "REPRO_EXCEPTION: TypeError(\"sum_Square() got an unexpected keyword argument 'j'\")"
-          },
-          "z3_stats": {
-            "valid_ms": 6.215999999767519
-          },
-          "reason": "Z3 found a violating model; replay_verdict=False"
-        },
-        {
-          "claim_id": "llm_claim_5_L6",
-          "claim_text": "i * i <= n",
-          "status": "COUNTEREXAMPLE",
-          "anchor": {
-            "node_ids": [
-              "sum_Square@If:L6:C12#0"
-            ],
-            "source_lines": [
-              6
-            ],
-            "has_grounding": true
-          },
-          "counterexample": {
-            "z3_model": {
-              "i": -4,
-              "n": 2
-            },
-            "replay_verdict": false,
-            "replay_output": "",
-            "replay_diff": "REPRO_EXCEPTION: TypeError(\"sum_Square() got an unexpected keyword argument 'i'\")"
-          },
-          "z3_stats": {
-            "valid_ms": 12.066799999956856
-          },
-          "reason": "Z3 found a violating model; replay_verdict=False"
-        }
-      ],
-      "elapsed_seconds": 0.26842759999999544,
+      "claim_results": [],
+      "elapsed_seconds": 7.060000098135788e-05,
       "total_tokens_in": 0,
       "total_tokens_out": 0,
-      "cot_trace": "The program checks if a given integer `n` can be expressed as the sum of two squares, `i*i + j*j == n`. We analyze the loop invariants and variable bounds:\n1. The outer loop variable `i` starts at 1 and increases by 1 in each iteration. Thus, at the outer loop header (line 3), `i >= 1` is always true.\n2. Upon entering the outer loop, the condition `i * i <= n` is guaranteed to hold. This remains true throughout the outer loop body, including at the inner loop header (line 5).\n3. The inner loop variable `j` starts at 1 and increases by 1. Thus, at the inner loop header (line 5), `j >= 1` holds.\n4. Inside the inner loop (line 6), both loop conditions must hold, meaning `i * i <= n` and `j * j <= n` are both true.",
+      "cot_trace": "",
       "baseline": "UNANCHORED",
-      "rejected_by_subset": false,
-      "subset_rejection_reason": null
+      "rejected_by_subset": true,
+      "subset_rejection_reason": "nonlinear multiplication is not part of the QF-LIA subset"
     }
   }
 ]

@@ -33,12 +33,13 @@
         },
         "counterexample": null,
         "z3_stats": {
+          "reach_ms": 0.961499999903026,
           "valid_ms": 0.0
         },
-        "reason": "claim holds on every reachable execution"
+        "reason": "claim holds on every complete path to its exact target node"
       }
     ],
-    "elapsed_seconds": 0.0019038000000364264,
+    "elapsed_seconds": 0.0024169999996956903,
     "total_tokens_in": 246,
     "total_tokens_out": 106,
     "cot_trace": "The function closest_num(n) takes an integer n and returns n - 1. At line 2, we can assert that the returned value, represented by the expression n - 1, is always strictly less than n. This is a trivial but valid linear integer arithmetic claim.",
@@ -63,22 +64,18 @@
         "claim_text": "n - 1 < n",
         "status": "VERIFIED",
         "anchor": {
-          "node_ids": [
-            "closest_num@Return:L2:C4#0"
-          ],
-          "source_lines": [
-            2
-          ],
-          "has_grounding": true
+          "node_ids": [],
+          "source_lines": [],
+          "has_grounding": false
         },
         "counterexample": null,
         "z3_stats": {
           "valid_ms": 0.0
         },
-        "reason": "claim holds on every reachable execution"
+        "reason": "free predicate is valid for every integer assignment"
       }
     ],
-    "elapsed_seconds": 0.0007572000004074653,
+    "elapsed_seconds": 0.0010624999995343387,
     "total_tokens_in": 246,
     "total_tokens_out": 106,
     "cot_trace": "The function closest_num(n) takes an integer n and returns n - 1. At line 2, we can assert that the returned value, represented by the expression n - 1, is always strictly less than n. This is a trivial but valid linear integer arithmetic claim.",

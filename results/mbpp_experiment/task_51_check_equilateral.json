@@ -33,9 +33,10 @@
         },
         "counterexample": null,
         "z3_stats": {
+          "reach_ms": 1.1154000003443798,
           "valid_ms": 0.0
         },
-        "reason": "claim holds on every reachable execution"
+        "reason": "claim holds on every complete path to its exact target node"
       },
       {
         "claim_id": "llm_claim_2_L3",
@@ -52,9 +53,10 @@
         },
         "counterexample": null,
         "z3_stats": {
+          "reach_ms": 1.1090000007243361,
           "valid_ms": 0.0
         },
-        "reason": "claim holds on every reachable execution"
+        "reason": "claim holds on every complete path to its exact target node"
       },
       {
         "claim_id": "llm_claim_3_L3",
@@ -71,12 +73,13 @@
         },
         "counterexample": null,
         "z3_stats": {
+          "reach_ms": 1.1040999997931067,
           "valid_ms": 0.0
         },
-        "reason": "claim holds on every reachable execution"
+        "reason": "claim holds on every complete path to its exact target node"
       }
     ],
-    "elapsed_seconds": 0.007866200000535173,
+    "elapsed_seconds": 0.009420200000022305,
     "total_tokens_in": 276,
     "total_tokens_out": 221,
     "cot_trace": "The function check_equilateral(x, y, z) checks whether all three variables are equal. At line 2, it branches on the condition 'x == y and y == z'. If the condition evaluates to True, control reaches line 3. At line 3, we can formally assert that both 'x == y' and 'y == z' hold, and by transitivity of equality, 'x == z' also holds. If the condition evaluates to False, control flows to line 5, where at least one equality is violated, i.e., not (x == y and y == z).",
@@ -89,8 +92,8 @@
     "source_path": "mbpp_51",
     "source_text": "def check_equilateral(x, y, z):\n    if x == y and y == z:\n        return True\n    else:\n        return False\n",
     "n_claims": 3,
-    "n_verified": 3,
-    "n_counterexample": 0,
+    "n_verified": 0,
+    "n_counterexample": 3,
     "n_unreachable": 0,
     "n_unsupported": 0,
     "n_translation_error": 0,
@@ -99,62 +102,74 @@
       {
         "claim_id": "llm_claim_1_L3",
         "claim_text": "x == y",
-        "status": "VERIFIED",
+        "status": "COUNTEREXAMPLE",
         "anchor": {
-          "node_ids": [
-            "check_equilateral@Return:L3:C8#0"
-          ],
-          "source_lines": [
-            3
-          ],
-          "has_grounding": true
+          "node_ids": [],
+          "source_lines": [],
+          "has_grounding": false
         },
-        "counterexample": null,
+        "counterexample": {
+          "z3_model": {
+            "x": 1,
+            "y": 0
+          },
+          "replay_verdict": null,
+          "replay_output": null,
+          "replay_diff": null
+        },
         "z3_stats": {
-          "valid_ms": 0.0
+          "valid_ms": 1.4207999993232079
         },
-        "reason": "claim holds on every reachable execution"
+        "reason": "free predicate has an integer counterexample; no program replay is applicable"
       },
       {
         "claim_id": "llm_claim_2_L3",
         "claim_text": "y == z",
-        "status": "VERIFIED",
+        "status": "COUNTEREXAMPLE",
         "anchor": {
-          "node_ids": [
-            "check_equilateral@Return:L3:C8#0"
-          ],
-          "source_lines": [
-            3
-          ],
-          "has_grounding": true
+          "node_ids": [],
+          "source_lines": [],
+          "has_grounding": false
         },
-        "counterexample": null,
+        "counterexample": {
+          "z3_model": {
+            "y": 1,
+            "z": 0
+          },
+          "replay_verdict": null,
+          "replay_output": null,
+          "replay_diff": null
+        },
         "z3_stats": {
-          "valid_ms": 0.0
+          "valid_ms": 1.1779999986174516
         },
-        "reason": "claim holds on every reachable execution"
+        "reason": "free predicate has an integer counterexample; no program replay is applicable"
       },
       {
         "claim_id": "llm_claim_3_L3",
         "claim_text": "x == z",
-        "status": "VERIFIED",
+        "status": "COUNTEREXAMPLE",
         "anchor": {
-          "node_ids": [
-            "check_equilateral@Return:L3:C8#0"
-          ],
-          "source_lines": [
-            3
-          ],
-          "has_grounding": true
+          "node_ids": [],
+          "source_lines": [],
+          "has_grounding": false
         },
-        "counterexample": null,
+        "counterexample": {
+          "z3_model": {
+            "x": 1,
+            "z": 0
+          },
+          "replay_verdict": null,
+          "replay_output": null,
+          "replay_diff": null
+        },
         "z3_stats": {
-          "valid_ms": 0.0
+          "valid_ms": 1.4885000000504078
         },
-        "reason": "claim holds on every reachable execution"
+        "reason": "free predicate has an integer counterexample; no program replay is applicable"
       }
     ],
-    "elapsed_seconds": 0.003792999999859603,
+    "elapsed_seconds": 0.008874999999534339,
     "total_tokens_in": 276,
     "total_tokens_out": 221,
     "cot_trace": "The function check_equilateral(x, y, z) checks whether all three variables are equal. At line 2, it branches on the condition 'x == y and y == z'. If the condition evaluates to True, control reaches line 3. At line 3, we can formally assert that both 'x == y' and 'y == z' hold, and by transitivity of equality, 'x == z' also holds. If the condition evaluates to False, control flows to line 5, where at least one equality is violated, i.e., not (x == y and y == z).",

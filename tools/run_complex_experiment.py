@@ -207,13 +207,22 @@ def run_benchmark():
         raw_claims_data = []
 
         if cache_file.exists():
-            print("    [Cache Hit] Reusing existing results.")
-            with open(cache_file, "r", encoding="utf-8") as f:
-                cached_data = json.load(f)
-            all_results.append(cached_data)
-            continue
+            try:
+                cached_data = json.load(open(cache_file, "r", encoding="utf-8"))
+                cot_trace = cached_data.get("cot_trace", "")
+                tokens_in = cached_data.get("tokens_in", 0)
+                tokens_out = cached_data.get("tokens_out", 0)
+                if use_llm and "ast_anchored" in cached_data:
+                    for cr in cached_data["ast_anchored"].get("claim_results", []):
+                        ln = cr["anchor"]["source_lines"][0] if cr["anchor"]["source_lines"] else 1
+                        raw_claims_data.append({"line": ln, "expression": cr["claim_text"]})
+                elif not use_llm:
+                    raw_claims_data = item.get("inject_claims", [])
+                print(f"    [Cache Hit] Reusing CoT & {len(raw_claims_data)} claims, re-running pipeline...")
+            except Exception as e:
+                print(f"    [Cache Error] {e}")
 
-        if use_llm:
+        if use_llm and not raw_claims_data:
             print("    Calling Gemini 3.5 Flash for CoT & Invariants...")
             t0 = time.time()
             llm_res = generate_cot_and_claims(code, api_key=GEMINI_KEY, model="gemini-3.5-flash")
@@ -225,7 +234,7 @@ def run_benchmark():
             print(f"    Gemini CoT completed in {dur:.2f}s (In: {tokens_in}, Out: {tokens_out} tokens)")
             print(f"    Suggested {len(raw_claims_data)} claims.")
             time.sleep(13)  # Respect free tier rate limit
-        else:
+        elif not use_llm and not raw_claims_data:
             # Synthetic / injected claims
             raw_claims_data = item.get("inject_claims", [])
 

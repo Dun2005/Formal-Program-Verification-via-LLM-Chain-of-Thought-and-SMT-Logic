@@ -12,16 +12,16 @@
     "source_text": "def f(i, j, n):\n    while i < n:\n        if 0:\n            i = i + 6\n        else:\n            i = i + 3\n    assert (i % 3) == 0\n    return\n",
     "n_claims": 1,
     "n_verified": 0,
-    "n_counterexample": 0,
-    "n_unreachable": 1,
+    "n_counterexample": 1,
+    "n_unreachable": 0,
     "n_unsupported": 0,
     "n_translation_error": 0,
     "n_unknown_timeout": 0,
     "claim_results": [
       {
-        "claim_id": "assert_L7",
+        "claim_id": "assert_L7_#5",
         "claim_text": "i % 3 == 0",
-        "status": "UNREACHABLE",
+        "status": "COUNTEREXAMPLE",
         "anchor": {
           "node_ids": [
             "f@Assert:L7:C4#0"
@@ -31,14 +31,27 @@
           ],
           "has_grounding": true
         },
-        "counterexample": null,
-        "z3_stats": {
-          "reach_ms": 0.0
+        "counterexample": {
+          "z3_model": {
+            "n": 1,
+            "i": 1,
+            "_state_6554184467560681890_n": 1,
+            "j": 0,
+            "_state_6554184467560681890_j": 0,
+            "_state_6554184467560681890_i": 1
+          },
+          "replay_verdict": true,
+          "replay_output": "None",
+          "replay_diff": null
         },
-        "reason": "path is unreachable (reachability UNSAT)"
+        "z3_stats": {
+          "reach_ms": 1.0794999998324784,
+          "valid_ms": 8.173899999746936
+        },
+        "reason": "Z3 found a violating model at the claim's target path; replay confirmed the target violation"
       }
     ],
-    "elapsed_seconds": 0.0016046999999161926,
+    "elapsed_seconds": 0.07436469999993278,
     "total_tokens_in": 0,
     "total_tokens_out": 0,
     "cot_trace": "",
@@ -51,34 +64,37 @@
     "source_path": "<test>",
     "source_text": "def f(i, j, n):\n    while i < n:\n        if 0:\n            i = i + 6\n        else:\n            i = i + 3\n    assert (i % 3) == 0\n    return\n",
     "n_claims": 1,
-    "n_verified": 1,
-    "n_counterexample": 0,
+    "n_verified": 0,
+    "n_counterexample": 1,
     "n_unreachable": 0,
     "n_unsupported": 0,
     "n_translation_error": 0,
     "n_unknown_timeout": 0,
     "claim_results": [
       {
-        "claim_id": "assert_L7",
+        "claim_id": "assert_L7_#1",
         "claim_text": "i % 3 == 0",
-        "status": "VERIFIED",
+        "status": "COUNTEREXAMPLE",
         "anchor": {
-          "node_ids": [
-            "f@Assert:L7:C4#0"
-          ],
-          "source_lines": [
-            7
-          ],
-          "has_grounding": true
+          "node_ids": [],
+          "source_lines": [],
+          "has_grounding": false
         },
-        "counterexample": null,
+        "counterexample": {
+          "z3_model": {
+            "i": 1
+          },
+          "replay_verdict": null,
+          "replay_output": null,
+          "replay_diff": null
+        },
         "z3_stats": {
-          "valid_ms": 0.0
+          "valid_ms": 1.2514000009105075
         },
-        "reason": "claim holds on every reachable execution"
+        "reason": "free predicate has an integer counterexample; no program replay is applicable"
       }
     ],
-    "elapsed_seconds": 0.0014363000000230386,
+    "elapsed_seconds": 0.003767999998672167,
     "total_tokens_in": 0,
     "total_tokens_out": 0,
     "cot_trace": "",
